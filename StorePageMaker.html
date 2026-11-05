@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NamaMeto Store GUI Editor V4</title>
+<title>NamaMeto Store GUI Editor V4.1</title>
 <style>
     /* =========================================
        1. エディタ領域のスタイル
@@ -101,6 +101,14 @@
     .img-portrait { width: 140px; }
     .img-landscape { width: 250px; }
     .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; background-color: rgba(0,0,0,0.6); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; padding-left: 4px; box-sizing: border-box; }
+    
+    .whatsnew-section { padding: 0 24px 24px 24px; }
+    .whatsnew-box { background-color: #f1f8f6; border: 1px solid #cce8e0; border-radius: 8px; padding: 16px; }
+    .whatsnew-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .whatsnew-title { font-size: 16px; font-weight: bold; margin: 0; color: var(--primary-color); }
+    .whatsnew-date { font-size: 13px; color: var(--text-sub); }
+    .whatsnew-text { font-size: 14px; line-height: 1.6; color: var(--text-sub); white-space: pre-wrap; }
+
     .description-section { padding: 0 24px 24px 24px; }
     .description-text { font-size: 14px; line-height: 1.6; color: var(--text-sub); white-space: pre-wrap; }
     .description-text a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
@@ -125,7 +133,7 @@
 <body>
 
 <div id="editor-panel">
-    <h2 class="editor-title">ページエディタ V4</h2>
+    <h2 class="editor-title">ページエディタ V4.1</h2>
     
     <div id="file-loader-area">
         📁 既存のHTMLファイルをここにドロップ<br>
@@ -149,6 +157,9 @@
     <div class="editor-group"><label>開発者名</label><input type="text" id="ed-ja-developer"></div>
     <div class="editor-group"><label>ボタンテキスト</label><input type="text" id="ed-ja-btn"></div>
     <div class="editor-group"><label>スクショ見出し</label><input type="text" id="ed-ja-sc"></div>
+    <div class="editor-group"><label>更新枠見出し</label><input type="text" id="ed-ja-whatsnew-title"></div>
+    <div class="editor-group"><label>更新日</label><input type="text" id="ed-ja-whatsnew-date"></div>
+    <div class="editor-group"><label>更新内容 (空欄で枠ごと非表示)</label><textarea id="ed-ja-whatsnew-desc"></textarea></div>
     <div class="editor-group"><label>説明文 (改行・HTMLタグ可)</label><textarea id="ed-ja-desc"></textarea></div>
     
     <div class="section-title">テキスト設定 (英語 EN)</div>
@@ -157,6 +168,9 @@
     <div class="editor-group"><label>Developer</label><input type="text" id="ed-en-developer"></div>
     <div class="editor-group"><label>Button Text</label><input type="text" id="ed-en-btn"></div>
     <div class="editor-group"><label>Screenshots Title</label><input type="text" id="ed-en-sc"></div>
+    <div class="editor-group"><label>What's New Title</label><input type="text" id="ed-en-whatsnew-title"></div>
+    <div class="editor-group"><label>Date</label><input type="text" id="ed-en-whatsnew-date"></div>
+    <div class="editor-group"><label>What's New Desc</label><textarea id="ed-en-whatsnew-desc"></textarea></div>
     <div class="editor-group"><label>Description</label><textarea id="ed-en-desc"></textarea></div>
 
     <div class="section-title">メディア設定 (スクショ・動画)</div>
@@ -192,6 +206,17 @@
             <h2 id="ui-screenshots-title" class="preview-title"></h2>
             <div id="ui-gallery" class="gallery-scroll"></div>
         </div>
+        
+        <div class="whatsnew-section" id="ui-whatsnew-section" style="display: none;">
+            <div class="whatsnew-box">
+                <div class="whatsnew-header">
+                    <h3 id="ui-whatsnew-title" class="whatsnew-title"></h3>
+                    <span id="ui-whatsnew-date" class="whatsnew-date"></span>
+                </div>
+                <div id="ui-whatsnew-desc" class="whatsnew-text"></div>
+            </div>
+        </div>
+
         <div class="description-section">
             <div id="ui-description" class="description-text"></div>
         </div>
@@ -240,6 +265,14 @@
     .img-portrait { width: 140px; }
     .img-landscape { width: 250px; }
     .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; background-color: rgba(0,0,0,0.6); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; padding-left: 4px; box-sizing: border-box; }
+    
+    .whatsnew-section { padding: 0 24px 24px 24px; }
+    .whatsnew-box { background-color: #f1f8f6; border: 1px solid #cce8e0; border-radius: 8px; padding: 16px; }
+    .whatsnew-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .whatsnew-title { font-size: 16px; font-weight: bold; margin: 0; color: var(--primary-color); }
+    .whatsnew-date { font-size: 13px; color: var(--text-sub); }
+    .whatsnew-text { font-size: 14px; line-height: 1.6; color: var(--text-sub); white-space: pre-wrap; }
+
     .description-section { padding: 0 24px 24px 24px; }
     .description-text { font-size: 14px; line-height: 1.6; color: var(--text-sub); white-space: pre-wrap; }
     .description-text a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
@@ -282,6 +315,17 @@ let currentLang = 'ja';
         <h2 id="ui-screenshots-title" class="section-title"></h2>
         <div id="ui-gallery" class="gallery-scroll"></div>
     </div>
+    
+    <div class="whatsnew-section" id="ui-whatsnew-section" style="display: none;">
+        <div class="whatsnew-box">
+            <div class="whatsnew-header">
+                <h3 id="ui-whatsnew-title" class="whatsnew-title"></h3>
+                <span id="ui-whatsnew-date" class="whatsnew-date"></span>
+            </div>
+            <div id="ui-whatsnew-desc" class="whatsnew-text"></div>
+        </div>
+    </div>
+
     <div class="description-section">
         <div id="ui-description" class="description-text"></div>
     </div>
@@ -321,6 +365,16 @@ function renderUI() {
     document.getElementById('ui-screenshots-title').innerText = textData.screenshotsTitle || "";
     document.getElementById('ui-description').innerHTML = textData.description || "";
     document.getElementById('ui-more-apps-title').innerText = textData.moreAppsTitle || "";
+    
+    const whatsnewSec = document.getElementById('ui-whatsnew-section');
+    if (textData.whatsnewDesc && textData.whatsnewDesc.trim() !== "") {
+        whatsnewSec.style.display = 'block';
+        document.getElementById('ui-whatsnew-title').innerText = textData.whatsnewTitle || "";
+        document.getElementById('ui-whatsnew-date').innerText = textData.whatsnewDate || "";
+        document.getElementById('ui-whatsnew-desc').innerText = textData.whatsnewDesc || "";
+    } else {
+        whatsnewSec.style.display = 'none';
+    }
     
     const gallery = document.getElementById('ui-gallery');
     if (gallery.innerHTML.trim() === "") {
@@ -431,8 +485,8 @@ const GAS_TRANSLATE_URL = "https://script.google.com/macros/s/AKfycbz1pZMs31cjfW
 
 let APP_CONFIG = {
     appUrl: "", appIcon: "", media: [ { type: "image", src: "" } ], moreApps: [],
-    ja: { title: "", developer: "", buttonText: "", screenshotsTitle: "", moreAppsTitle: "", description: "", moreAppNames: {} },
-    en: { title: "", developer: "", buttonText: "", screenshotsTitle: "", moreAppsTitle: "", description: "", moreAppNames: {} }
+    ja: { title: "", developer: "", buttonText: "", screenshotsTitle: "", whatsnewTitle: "最新の更新内容", whatsnewDate: "", whatsnewDesc: "", moreAppsTitle: "", description: "", moreAppNames: {} },
+    en: { title: "", developer: "", buttonText: "", screenshotsTitle: "", whatsnewTitle: "What's New", whatsnewDate: "", whatsnewDesc: "", moreAppsTitle: "", description: "", moreAppNames: {} }
 };
 let currentLang = 'ja';
 
@@ -444,6 +498,9 @@ function initEditor() {
     document.getElementById('ed-ja-developer').value = APP_CONFIG.ja.developer || "";
     document.getElementById('ed-ja-btn').value = APP_CONFIG.ja.buttonText || "";
     document.getElementById('ed-ja-sc').value = APP_CONFIG.ja.screenshotsTitle || "";
+    document.getElementById('ed-ja-whatsnew-title').value = APP_CONFIG.ja.whatsnewTitle || "";
+    document.getElementById('ed-ja-whatsnew-date').value = APP_CONFIG.ja.whatsnewDate || "";
+    document.getElementById('ed-ja-whatsnew-desc').value = APP_CONFIG.ja.whatsnewDesc || "";
     document.getElementById('ed-ja-more').value = APP_CONFIG.ja.moreAppsTitle || "";
     document.getElementById('ed-ja-desc').value = APP_CONFIG.ja.description || "";
 
@@ -451,6 +508,9 @@ function initEditor() {
     document.getElementById('ed-en-developer').value = APP_CONFIG.en.developer || "";
     document.getElementById('ed-en-btn').value = APP_CONFIG.en.buttonText || "";
     document.getElementById('ed-en-sc').value = APP_CONFIG.en.screenshotsTitle || "";
+    document.getElementById('ed-en-whatsnew-title').value = APP_CONFIG.en.whatsnewTitle || "";
+    document.getElementById('ed-en-whatsnew-date').value = APP_CONFIG.en.whatsnewDate || "";
+    document.getElementById('ed-en-whatsnew-desc').value = APP_CONFIG.en.whatsnewDesc || "";
     document.getElementById('ed-en-more').value = APP_CONFIG.en.moreAppsTitle || "";
     document.getElementById('ed-en-desc').value = APP_CONFIG.en.description || "";
 
@@ -476,6 +536,9 @@ function updateConfigFromEditor() {
     APP_CONFIG.ja.developer = document.getElementById('ed-ja-developer').value;
     APP_CONFIG.ja.buttonText = document.getElementById('ed-ja-btn').value;
     APP_CONFIG.ja.screenshotsTitle = document.getElementById('ed-ja-sc').value;
+    APP_CONFIG.ja.whatsnewTitle = document.getElementById('ed-ja-whatsnew-title').value;
+    APP_CONFIG.ja.whatsnewDate = document.getElementById('ed-ja-whatsnew-date').value;
+    APP_CONFIG.ja.whatsnewDesc = document.getElementById('ed-ja-whatsnew-desc').value;
     APP_CONFIG.ja.moreAppsTitle = document.getElementById('ed-ja-more').value;
     APP_CONFIG.ja.description = document.getElementById('ed-ja-desc').value;
 
@@ -483,6 +546,9 @@ function updateConfigFromEditor() {
     APP_CONFIG.en.developer = document.getElementById('ed-en-developer').value;
     APP_CONFIG.en.buttonText = document.getElementById('ed-en-btn').value;
     APP_CONFIG.en.screenshotsTitle = document.getElementById('ed-en-sc').value;
+    APP_CONFIG.en.whatsnewTitle = document.getElementById('ed-en-whatsnew-title').value;
+    APP_CONFIG.en.whatsnewDate = document.getElementById('ed-en-whatsnew-date').value;
+    APP_CONFIG.en.whatsnewDesc = document.getElementById('ed-en-whatsnew-desc').value;
     APP_CONFIG.en.moreAppsTitle = document.getElementById('ed-en-more').value;
     APP_CONFIG.en.description = document.getElementById('ed-en-desc').value;
 
@@ -620,7 +686,17 @@ dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.
 document.getElementById('html-file-input').addEventListener('change', e => { if(e.target.files[0]) loadHTMLFile(e.target.files[0]); });
 
 async function translateEmptyFields() {
-    const fields = [ { ja: 'ed-ja-title', en: 'ed-en-title' }, { ja: 'ed-ja-developer', en: 'ed-en-developer' }, { ja: 'ed-ja-btn', en: 'ed-en-btn' }, { ja: 'ed-ja-sc', en: 'ed-en-sc' }, { ja: 'ed-ja-more', en: 'ed-en-more' }, { ja: 'ed-ja-desc', en: 'ed-en-desc' } ];
+    const fields = [ 
+        { ja: 'ed-ja-title', en: 'ed-en-title' }, 
+        { ja: 'ed-ja-developer', en: 'ed-en-developer' }, 
+        { ja: 'ed-ja-btn', en: 'ed-en-btn' }, 
+        { ja: 'ed-ja-sc', en: 'ed-en-sc' }, 
+        { ja: 'ed-ja-whatsnew-title', en: 'ed-en-whatsnew-title' },
+        { ja: 'ed-ja-whatsnew-date', en: 'ed-en-whatsnew-date' },
+        { ja: 'ed-ja-whatsnew-desc', en: 'ed-en-whatsnew-desc' },
+        { ja: 'ed-ja-more', en: 'ed-en-more' }, 
+        { ja: 'ed-ja-desc', en: 'ed-en-desc' } 
+    ];
     const btn = document.getElementById('translate-btn'); btn.innerText = "⏳ 翻訳中..."; btn.disabled = true;
 
     for (let f of fields) {
@@ -662,6 +738,16 @@ function renderUI() {
     document.getElementById('ui-description').innerHTML = textData.description || "";
     document.getElementById('ui-more-apps-title').innerText = textData.moreAppsTitle || "";
     
+    const whatsnewSec = document.getElementById('ui-whatsnew-section');
+    if (textData.whatsnewDesc && textData.whatsnewDesc.trim() !== "") {
+        whatsnewSec.style.display = 'block';
+        document.getElementById('ui-whatsnew-title').innerText = textData.whatsnewTitle || "";
+        document.getElementById('ui-whatsnew-date').innerText = textData.whatsnewDate || "";
+        document.getElementById('ui-whatsnew-desc').innerText = textData.whatsnewDesc || "";
+    } else {
+        whatsnewSec.style.display = 'none';
+    }
+
     const gallery = document.getElementById('ui-gallery');
     gallery.innerHTML = "";
     APP_CONFIG.media.forEach((item, index) => {

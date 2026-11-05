@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NamaMeto Download Page</title>
+<style>
+    :root { --primary-color: #01875f; --bg-color: #ffffff; --text-main: #202124; --text-sub: #5f6368; --border-color: #e8eaed; --btn-radius: 8px; }
+    body { font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: var(--text-main); }
+    #app-container { max-width: 480px; margin: 0 auto; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.1); padding-bottom: 40px; position: relative; }
+    .header-section { padding: 24px 100px 24px 24px; display: flex; gap: 16px; }
+    .app-icon { width: 72px; height: 72px; border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.2); object-fit: cover; }
+    .app-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .app-title { font-size: 24px; font-weight: bold; margin: 0 0 4px 0; line-height: 1.2; }
+    .app-developer { color: var(--primary-color); font-size: 14px; font-weight: bold; margin: 0; }
+    .action-section { padding: 0 24px 24px 24px; }
+    .btn-install { display: block; width: 100%; padding: 12px 0; background-color: var(--primary-color); color: white; text-align: center; text-decoration: none; border-radius: var(--btn-radius); font-size: 14px; font-weight: bold; border: none; cursor: pointer; }
+    .screenshots-section { padding: 0 0 24px 24px; overflow: hidden; }
+    .section-title { font-size: 18px; font-weight: bold; margin: 0 0 16px 0; padding-right: 24px;}
+    .gallery-scroll { display: flex; gap: 12px; overflow-x: auto; padding-right: 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+    .gallery-scroll::-webkit-scrollbar { display: none; }
+    .gallery-item-wrapper { position: relative; flex: 0 0 auto; cursor: pointer; scroll-snap-align: start; }
+    .gallery-item { height: 250px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color); display: block; background: #000; }
+    .img-portrait { width: 140px; }
+    .img-landscape { width: 250px; }
+    .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; background-color: rgba(0,0,0,0.6); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; padding-left: 4px; box-sizing: border-box; }
+    .description-section { padding: 0 24px 24px 24px; }
+    .description-text { font-size: 14px; line-height: 1.6; color: var(--text-sub); white-space: pre-wrap; }
+    .description-text a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
+    .more-apps-section { padding: 24px; border-top: 1px solid var(--border-color); }
+    .more-apps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 16px; }
+    .more-app-card { text-align: center; text-decoration: none; color: inherit; display: block;}
+    .more-app-icon { width: 64px; height: 64px; border-radius: 12px; margin-bottom: 8px; object-fit: cover; }
+    .more-app-name { font-size: 12px; color: var(--text-sub); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lang-toggle { position: absolute; top: 24px; right: 24px; background: transparent; border: 1px solid var(--border-color); border-radius: 16px; padding: 4px 12px; font-size: 12px; color: var(--text-sub); cursor: pointer; background-color: var(--bg-color); z-index: 10; }
+    #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; box-sizing: border-box; }
+    #lightbox.active { display: flex; }
+    #lightbox-img { max-width: 90%; max-height: 80vh; object-fit: contain; border-radius: 4px; transition: opacity 0.2s; display: none; }
+    #lightbox-video { width: 100%; max-width: 800px; aspect-ratio: 16 / 9; transition: opacity 0.2s; display: none; background: transparent; }
+    #lightbox-video iframe, #lightbox-video video { width: 100%; height: 100%; border: none; max-height: 80vh; outline: none; object-fit: contain; }
+    .lightbox-controls { display: flex; justify-content: space-between; width: 100%; position: absolute; top: 50%; transform: translateY(-50%); padding: 0 20px; box-sizing: border-box; pointer-events: none; z-index: 1001;}
+    .nav-btn { background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 20px; cursor: pointer; pointer-events: auto; }
+    .close-btn { position: absolute; top: 20px; right: 20px; background: transparent; color: white; border: none; font-size: 32px; cursor: pointer; z-index: 1001;}
+    .swipe-hint { color: rgba(255,255,255,0.5); font-size: 12px; position: absolute; bottom: 40px; }
+</style>
+</head>
+<body>
+<script>
+const APP_CONFIG = {"appUrl": "#", "appIcon": "icon-placeholder.png", "media": [{"type": "image", "src": "screen-score.jpg"}, {"type": "image", "src": "screen-menu.jpg"}], "moreApps": [{"id": "namameto", "icon": "https://nama1223.com/NamaMeto/NamaMetoLogo512.png", "url": "https://nama1223.com/NamaMeto/NamaMeto.html"}, {"id": "namatunepdf", "icon": "https://nama1223.com/NamaTunePDF/NamaTunePDF512.png", "url": "https://nama1223.com/NamaTunePDF/"}, {"id": "namarhy", "icon": "https://nama1223.com/NamaRhy/NamaRhy512.png", "url": "https://nama1223.com/NamaRhy/"}], "ja": {"title": "NamaComp ─ 楽譜入力アプリ「なまこん」（開発中・非公開）─", "developer": "生", "buttonText": "現在は非公開", "screenshotsTitle": "スクリーンショット/画面説明", "description": "ブラウザで動く楽譜入力アプリ「なまこん」。開発中で、完成まではまだかなり遠いため非公開です（このページの起動ボタンは無効になっています）。\n\n■ 現在の姿\nパートごとの五線譜に、ロール／鍵盤の2方式で音符・休符・記号を入力。ツールバーは 記号／小節／選択／表現／表示／再生 の6系統。音符フォントはBravura／Leland／Petalumaから選べます。楽譜マネージャー（編成の編集）、読み込み／書き出し、再生確認にも対応中です。\n\n■ 画面説明（スクリーンショットの見方）\n1) エディタ: スコアと入力パネル（デフォルト編成はTrp／Horn／Tuba）。\n2) メニュー: 新規作成・編成・入出力・音符フォントの切替。", "moreAppsTitle": "生 の他のアプリ", "moreAppNames": {"namameto": "NamaMeto", "namatunepdf": "NamaTunePDF", "namarhy": "NamaRhy"}}, "en": {"title": "NamaComp - Score Editor 'Namakon' (In Development, Private) -", "developer": "Nama", "buttonText": "Not Public", "screenshotsTitle": "Screenshots & Guide", "description": "A score-input app that runs in the browser. Still far from completion, so it is private for now (the launch button on this page is disabled).\n\n■ Current state\nEnter notes, rests and symbols on per-part staves, using roll or keyboard input. The toolbar has six groups: Symbols / Measures / Select / Expression / View / Play. Note fonts: Bravura, Leland or Petaluma. A score manager (instrumentation), import/export and playback checks are in progress.\n\n■ Screen Guide\n1) Editor: score and input panel (default parts: Trp / Horn / Tuba).\n2) Menu: new score, instrumentation, import/export, font switching.", "moreAppsTitle": "More apps by Nama", "moreAppNames": {"namameto": "NamaMeto", "namatunepdf": "NamaTunePDF", "namarhy": "NamaRhy"}}};
+let currentLang = 'ja';
+</script>
+
+<div id="app-container">
+    <button class="lang-toggle" onclick="toggleLanguage()">EN / JP</button>
+    <div class="header-section">
+        <img id="ui-app-icon" class="app-icon" src="" alt="App Icon">
+        <div class="app-info">
+            <h1 id="ui-title" class="app-title"></h1>
+            <p id="ui-developer" class="app-developer"></p>
+        </div>
+    </div>
+    <div class="action-section">
+        <a id="ui-action-btn" class="btn-install" href="#" target="_blank"></a>
+    </div>
+    <div class="screenshots-section">
+        <h2 id="ui-screenshots-title" class="section-title"></h2>
+        <div id="ui-gallery" class="gallery-scroll"></div>
+    </div>
+    <div class="description-section">
+        <div id="ui-description" class="description-text"></div>
+    </div>
+    <div class="more-apps-section">
+        <h2 id="ui-more-apps-title" class="section-title"></h2>
+        <div id="ui-more-apps-grid" class="more-apps-grid"></div>
+    </div>
+</div>
+
+<div id="lightbox">
+    <button class="close-btn" onclick="closeLightbox()">×</button>
+    <img id="lightbox-img" src="" alt="Enlarged Screenshot">
+    <div id="lightbox-video"></div>
+    <div class="lightbox-controls">
+        <button class="nav-btn" onclick="prevMedia(event)">◀</button>
+        <button class="nav-btn" onclick="nextMedia(event)">▶</button>
+    </div>
+    <div class="swipe-hint">Swipe to navigate</div>
+</div>
+
+<script>
+const getBlankImgSvg = (num) => `data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600'%3E%3Crect width='100%25' height='100%25' fill='%23e8eaed'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='24' fill='%239aa0a6' text-anchor='middle' dominant-baseline='middle'%3ENo Image ${num}%3C/text%3E%3C/svg%3E`;
+const BLANK_ICON_SVG = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23e8eaed'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='24' fill='%239aa0a6' text-anchor='middle' dominant-baseline='middle'%3EIcon%3C/text%3E%3C/svg%3E";
+
+function renderUI() {
+    const textData = APP_CONFIG[currentLang];
+    document.getElementById('ui-title').innerText = textData.title || "";
+    document.getElementById('ui-developer').innerText = textData.developer || "";
+    const mainIcon = document.getElementById('ui-app-icon');
+    mainIcon.src = APP_CONFIG.appIcon;
+    mainIcon.onerror = () => { mainIcon.onerror = null; mainIcon.src = BLANK_ICON_SVG; };
+    
+    const actionBtn = document.getElementById('ui-action-btn');
+    actionBtn.innerText = textData.buttonText || "";
+    actionBtn.href = APP_CONFIG.appUrl || "#";
+    
+    document.getElementById('ui-screenshots-title').innerText = textData.screenshotsTitle || "";
+    document.getElementById('ui-description').innerHTML = textData.description || "";
+    document.getElementById('ui-more-apps-title').innerText = textData.moreAppsTitle || "";
+    
+    const gallery = document.getElementById('ui-gallery');
+    if (gallery.innerHTML.trim() === "") {
+        APP_CONFIG.media.forEach((item, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'gallery-item-wrapper';
+            wrapper.onclick = () => openLightbox(index);
+            
+            if (item.type === 'youtube') {
+                const img = document.createElement('img');
+                img.className = 'gallery-item img-landscape';
+                img.src = `https://img.youtube.com/vi/${item.id}/hqdefault.jpg`;
+                wrapper.appendChild(img);
+                const playIcon = document.createElement('div');
+                playIcon.className = 'play-icon'; playIcon.innerHTML = '▶';
+                wrapper.appendChild(playIcon);
+            } else if (item.type === 'video') {
+                const video = document.createElement('video');
+                video.className = 'gallery-item img-portrait';
+                video.src = item.src;
+                video.preload = 'metadata';
+                wrapper.appendChild(video);
+                const playIcon = document.createElement('div');
+                playIcon.className = 'play-icon'; playIcon.innerHTML = '▶';
+                wrapper.appendChild(playIcon);
+            } else {
+                const img = document.createElement('img');
+                img.className = 'gallery-item img-portrait';
+                img.src = item.src;
+                img.onerror = () => { img.onerror = null; img.src = getBlankImgSvg(index + 1); };
+                wrapper.appendChild(img);
+            }
+            gallery.appendChild(wrapper);
+        });
+    }
+
+    const moreAppsGrid = document.getElementById('ui-more-apps-grid');
+    moreAppsGrid.innerHTML = "";
+    if(APP_CONFIG.moreApps) {
+        APP_CONFIG.moreApps.forEach(app => {
+            const a = document.createElement('a');
+            a.className = 'more-app-card';
+            a.href = app.url;
+            const img = document.createElement('img');
+            img.className = 'more-app-icon';
+            img.src = app.icon;
+            img.onerror = () => { img.onerror = null; img.src = BLANK_ICON_SVG; };
+            const span = document.createElement('span');
+            span.className = 'more-app-name';
+            span.innerText = textData.moreAppNames ? (textData.moreAppNames[app.id] || "") : "";
+            a.appendChild(img);
+            a.appendChild(span);
+            moreAppsGrid.appendChild(a);
+        });
+    }
+}
+
+function toggleLanguage() { currentLang = currentLang === 'ja' ? 'en' : 'ja'; renderUI(); }
+
+let currentMediaIndex = 0;
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxVideo = document.getElementById('lightbox-video');
+
+function openLightbox(index) { currentMediaIndex = index; updateLightboxMedia(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; lightboxVideo.innerHTML = ''; }
+function updateLightboxMedia() {
+    const item = APP_CONFIG.media[currentMediaIndex];
+    lightboxImg.style.opacity = '0'; lightboxVideo.style.opacity = '0'; lightboxVideo.innerHTML = ''; 
+    setTimeout(() => {
+        if (item.type === 'youtube') {
+            lightboxImg.style.display = 'none'; lightboxVideo.style.display = 'block';
+            lightboxVideo.innerHTML = `<iframe src="https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            lightboxVideo.style.opacity = '1';
+        } else if (item.type === 'video') {
+            lightboxImg.style.display = 'none'; lightboxVideo.style.display = 'block';
+            lightboxVideo.innerHTML = `<video src="${item.src}" controls autoplay style="width:100%; height:100%; max-height:80vh; object-fit:contain; outline:none;"></video>`;
+            lightboxVideo.style.opacity = '1';
+        } else {
+            lightboxVideo.style.display = 'none'; lightboxImg.style.display = 'block';
+            const tempImg = new Image();
+            tempImg.src = item.src;
+            tempImg.onload = () => { lightboxImg.src = tempImg.src; lightboxImg.style.opacity = '1'; };
+            tempImg.onerror = () => { lightboxImg.src = getBlankImgSvg(currentMediaIndex + 1); lightboxImg.style.opacity = '1'; };
+        }
+    }, 150);
+}
+function prevMedia(e) { if(e) e.stopPropagation(); currentMediaIndex = (currentMediaIndex > 0) ? currentMediaIndex - 1 : APP_CONFIG.media.length - 1; updateLightboxMedia(); }
+function nextMedia(e) { if(e) e.stopPropagation(); currentMediaIndex = (currentMediaIndex < APP_CONFIG.media.length - 1) ? currentMediaIndex + 1 : 0; updateLightboxMedia(); }
+
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+let touchStartX = 0; let touchEndX = 0;
+lightbox.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+lightbox.addEventListener('touchend', e => {
+    touchEndX = e.changedTouches[0].screenX;
+    const swipeThreshold = 50;
+    if (touchEndX < touchStartX - swipeThreshold) nextMedia();
+    if (touchEndX > touchStartX + swipeThreshold) prevMedia();
+});
+window.onload = renderUI;
+</script>
+</body>
+</html>
