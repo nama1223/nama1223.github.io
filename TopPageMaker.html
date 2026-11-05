@@ -3,843 +3,661 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NamaMeto Store GUI Editor V4.1</title>
+<title>Nama Studio Top GUI Editor V5</title>
 <style>
     /* =========================================
        1. エディタ領域のスタイル
        ========================================= */
-    body {
-        margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden;
-        font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-        background-color: #2d2e30; color: #202124;
-    }
-    #editor-panel {
-        width: 480px; background-color: #f8f9fa; border-right: 1px solid #ccc;
-        padding: 24px; overflow-y: auto; box-sizing: border-box; flex-shrink: 0;
-        z-index: 100;
-    }
+    body { margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; background-color: #2d2e30; color: #202124; }
+    #editor-panel { width: 480px; background-color: #f8f9fa; border-right: 1px solid #ccc; padding: 24px; overflow-y: auto; box-sizing: border-box; flex-shrink: 0; z-index: 100; position: relative; }
     #resizer { width: 8px; background-color: #ddd; cursor: col-resize; flex-shrink: 0; z-index: 150; transition: background 0.2s; }
     #resizer:hover, #resizer:active { background-color: #01875f; }
-    
-    #preview-panel {
-        flex: 1; overflow-y: auto; position: relative;
-        display: flex; justify-content: center; align-items: flex-start; padding: 40px 20px;
-    }
+    #preview-panel { flex: 1; overflow-y: auto; position: relative; background-color: #3a3b3c; padding: 30px 20px; display: flex; justify-content: center; align-items: flex-start; }
 
-    #file-loader-area {
-        border: 2px dashed #01875f; background-color: #e9f5f1; border-radius: 8px;
-        padding: 16px; text-align: center; margin-bottom: 24px; font-size: 13px;
-        color: #01875f; font-weight: bold; transition: background 0.2s;
-    }
-    #file-loader-area.dragover { background-color: #cce8e0; }
-
-    .editor-title { margin-top: 0; font-size: 22px; color: #01875f; }
-    .section-title { font-size: 15px; font-weight: bold; margin: 32px 0 16px; padding-bottom: 6px; border-bottom: 2px solid #01875f; color: #01875f; }
+    .section-title { font-size: 16px; font-weight: bold; margin: 20px 0 12px 0; border-bottom: 2px solid #01875f; padding-bottom: 4px; color: #01875f; }
+    .section-title:first-child { margin-top: 0; }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #5f6368; }
+    .form-group input[type="text"], .form-group textarea { width: 100%; padding: 8px 12px; box-sizing: border-box; border: 1px solid #dadce0; border-radius: 4px; font-size: 14px; background: #fff; font-family: inherit; resize: vertical; }
+    .form-group input[type="text"]:focus, .form-group textarea:focus { border-color: #01875f; outline: none; box-shadow: 0 0 0 2px rgba(1,135,95,0.2); }
     
-    .editor-group { margin-bottom: 16px; }
-    .editor-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #444; }
-    .help-text { font-size: 11px; color: #666; margin-bottom: 6px; line-height: 1.3; }
-    
-    .editor-group input, .editor-group textarea, .editor-group select {
-        width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box;
-        font-family: monospace; font-size: 13px; background: #fff; transition: border 0.2s;
-    }
-    .editor-group textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
-    .editor-group input:focus, .editor-group textarea:focus, .editor-group select:focus { border-color: #01875f; outline: none; }
+    .checkbox-group { display: flex; gap: 12px; margin-top: 6px; }
+    .checkbox-label { display: flex; align-items: center; font-size: 13px; cursor: pointer; color: #202124; font-weight: normal; }
+    .checkbox-label input { margin-right: 4px; width: 16px; height: 16px; accent-color: #01875f; }
 
-    .dynamic-list-item {
-        background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 12px;
-        margin-bottom: 12px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    }
-    .dynamic-list-item .delete-btn {
-        position: absolute; top: 12px; right: 12px; background: #dc3545; color: white;
-        border: none; border-radius: 4px; padding: 4px 8px; font-size: 11px; cursor: pointer;
-    }
-    .dynamic-list-item .delete-btn:hover { background: #c82333; }
-    .row-inputs { display: flex; gap: 8px; margin-bottom: 8px; }
-    .row-inputs > * { flex: 1; }
-    
-    .add-btn {
-        width: 100%; padding: 10px; background: #e9ecef; color: #333; border: 1px dashed #adb5bd;
-        border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; margin-bottom: 8px;
-    }
-    .add-btn:hover { background: #dee2e6; }
+    .btn { background-color: #01875f; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; font-size: 14px; transition: background 0.2s; text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .btn:hover { background-color: #006e4e; }
+    .btn-secondary { background-color: #ffffff; color: #202124; border: 1px solid #dadce0; box-shadow: none; margin-top: 4px; }
+    .btn-secondary:hover { background-color: #f1f3f4; }
+    .btn-danger { background-color: #d93025; color: white; }
+    .btn-danger:hover { background-color: #b31412; }
+    .btn-sm { padding: 4px 8px; font-size: 12px; width: auto; font-weight: normal; border-radius: 3px; }
 
-    .export-btn, .translate-btn {
-        width: 100%; padding: 12px; border: none; border-radius: 8px;
-        font-size: 15px; font-weight: bold; cursor: pointer; transition: background 0.2s;
-    }
-    .export-btn { background: #01875f; color: white; margin-top: 24px; margin-bottom: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .export-btn:hover { background: #006b4b; }
-    .translate-btn { background: #4285f4; color: white; margin-bottom: 16px; }
-    .translate-btn:disabled { background: #9aa0a6; cursor: not-allowed; }
+    .file-input-wrapper { background: #e8eaed; border: 2px dashed #bdc1c6; padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 20px; }
+    .file-input-wrapper input[type="file"] { display: none; }
+    .file-input-label { cursor: pointer; display: block; font-size: 13px; font-weight: bold; color: #3c4043; }
+
+    .genre-block { background: #ffffff; border: 1px solid #dadce0; border-radius: 8px; padding: 14px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .genre-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+    .genre-ctrls, .app-ctrls { display: flex; gap: 4px; }
+    .app-edit-list { margin-top: 8px; border-top: 1px dashed #dadce0; padding-top: 12px; }
+    .app-edit-block { background: #f8f9fa; border: 1px solid #e8eaed; border-radius: 6px; padding: 12px; margin-bottom: 12px; }
+    .app-edit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: bold; color: #5f6368; border-bottom: 1px solid #e8eaed; padding-bottom: 4px; }
+
+    .status-bar { font-size: 11px; color: #5f6368; text-align: center; margin-bottom: 10px; }
+    .reset-btn { font-size: 11px; color: #d93025; background: none; border: none; text-decoration: underline; cursor: pointer; }
+    .hint-text { font-size: 11px; color: #01875f; display: block; margin-top: 2px; }
 
     /* =========================================
-       2. プレビュー表示用オリジナルCSS
+       2. プレビュー用基本レスポンシブスタイル
        ========================================= */
-    :root {
-        --primary-color: #01875f; --bg-color: #ffffff; --text-main: #202124; --text-sub: #5f6368; --border-color: #e8eaed; --btn-radius: 8px;
-    }
-    #app-container {
-        max-width: 480px; width: 100%; margin: 0; background-color: var(--bg-color);
-        min-height: 100%; box-shadow: 0 0 20px rgba(0,0,0,0.4);
-        padding-bottom: 40px; position: relative; border-radius: 8px; overflow: hidden;
-    }
-    .header-section { padding: 24px 100px 24px 24px; display: flex; gap: 16px; }
-    .app-icon { width: 72px; height: 72px; border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.2); object-fit: cover; }
-    .app-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    .app-title { font-size: 24px; font-weight: bold; margin: 0 0 4px 0; line-height: 1.2; }
-    .app-developer { color: var(--primary-color); font-size: 14px; font-weight: bold; margin: 0; }
-    .action-section { padding: 0 24px 24px 24px; }
-    .btn-install { display: block; width: 100%; padding: 12px 0; background-color: var(--primary-color); color: white; text-align: center; text-decoration: none; border-radius: var(--btn-radius); font-size: 14px; font-weight: bold; border: none; cursor: pointer; }
-    .screenshots-section { padding: 0 0 24px 24px; overflow: hidden; }
-    .preview-title { font-size: 18px; font-weight: bold; margin: 0 0 16px 0; padding-right: 24px;}
-    .gallery-scroll { display: flex; gap: 12px; overflow-x: auto; padding-right: 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
-    .gallery-scroll::-webkit-scrollbar { display: none; }
-    .gallery-item-wrapper { position: relative; flex: 0 0 auto; cursor: pointer; scroll-snap-align: start; }
-    .gallery-item { height: 250px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color); display: block; background: #000; }
-    .img-portrait { width: 140px; }
-    .img-landscape { width: 250px; }
-    .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; background-color: rgba(0,0,0,0.6); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; padding-left: 4px; box-sizing: border-box; }
+    .store-top-view { width: 100%; max-width: 960px; background-color: #f2f2f2; min-height: 85vh; color: #202124; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden; }
+    .store-top-view .navbar { background-color: #ffffff; border-bottom: 1px solid #e8eaed; min-height: 56px; display: flex; align-items: center; padding: 8px 16px; box-sizing: border-box; }
+    .store-top-view .navbar-container { width: 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+    .store-top-view .navbar-left { display: flex; align-items: center; gap: 12px; }
+    .store-top-view .brand-logo { height: 28px; width: auto; object-fit: contain; }
+    .store-top-view .brand-name { font-size: 16px; font-weight: bold; color: #202124; }
     
-    .whatsnew-section { padding: 0 24px 24px 24px; }
-    .whatsnew-box { background-color: #f1f8f6; border: 1px solid #cce8e0; border-radius: 8px; padding: 16px; }
-    .whatsnew-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
-    .whatsnew-title { font-size: 16px; font-weight: bold; margin: 0; color: var(--primary-color); }
-    .whatsnew-date { font-size: 13px; color: var(--text-sub); }
-    .whatsnew-text { font-size: 14px; line-height: 1.6; color: var(--text-sub); white-space: pre-wrap; }
+    .store-top-view .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; gap: 16px; }
+    .store-top-view .nav-item { display: flex; align-items: center; position: relative; padding: 6px 2px; }
+    .store-top-view .nav-link { text-decoration: none; color: #5f6368; font-size: 13px; font-weight: bold; }
+    .store-top-view .nav-item.active .nav-link { color: #01875f; }
+    .store-top-view .nav-item.active::after { content: ''; position: absolute; bottom: -8px; left: 0; right: 0; height: 3px; background-color: #01875f; border-top-left-radius: 3px; border-top-right-radius: 3px; }
 
-    .description-section { padding: 0 24px 24px 24px; }
-    .description-text { font-size: 14px; line-height: 1.6; color: var(--text-sub); white-space: pre-wrap; }
-    .description-text a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
-    .more-apps-section { padding: 24px; border-top: 1px solid var(--border-color); }
-    .more-apps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 16px; }
-    .more-app-card { text-align: center; text-decoration: none; color: inherit; display: block;}
-    .more-app-icon { width: 64px; height: 64px; border-radius: 12px; margin-bottom: 8px; object-fit: cover; }
-    .more-app-name { font-size: 12px; color: var(--text-sub); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .lang-toggle { position: absolute; top: 24px; right: 24px; background: transparent; border: 1px solid var(--border-color); border-radius: 16px; padding: 4px 12px; font-size: 12px; color: var(--text-sub); cursor: pointer; background-color: var(--bg-color); z-index: 10; }
-
-    #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; box-sizing: border-box; }
-    #lightbox.active { display: flex; }
-    #lightbox-img { max-width: 90%; max-height: 80vh; object-fit: contain; border-radius: 4px; transition: opacity 0.2s; display: none; }
-    #lightbox-video { width: 100%; max-width: 800px; aspect-ratio: 16 / 9; transition: opacity 0.2s; display: none; background: transparent; }
-    #lightbox-video iframe, #lightbox-video video { width: 100%; height: 100%; border: none; max-height: 80vh; outline: none; object-fit: contain; }
-    .lightbox-controls { display: flex; justify-content: space-between; width: 100%; position: absolute; top: 50%; transform: translateY(-50%); padding: 0 20px; box-sizing: border-box; pointer-events: none; z-index: 2001;}
-    .nav-btn { background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 20px; cursor: pointer; pointer-events: auto; }
-    .close-btn { position: absolute; top: 20px; right: 20px; background: transparent; color: white; border: none; font-size: 32px; cursor: pointer; z-index: 2001;}
-    .lightbox-hint { color: rgba(255,255,255,0.8); font-size: 14px; position: absolute; bottom: 40px; text-align: center; font-weight: bold; pointer-events: none;}
+    .store-top-view .main-content { padding: 24px 20px; box-sizing: border-box; }
+    .store-top-view .intro-section { margin-bottom: 24px; background: #fff; padding: 14px 16px; border-radius: 8px; border: 1px solid #e8eaed; }
+    .store-top-view .intro-text { margin: 0; font-size: 13px; color: #5f6368; line-height: 1.5; white-space: pre-wrap; }
+    
+    .store-top-view .genre-section { margin-bottom: 32px; }
+    .store-top-view .genre-title { font-size: 16px; font-weight: bold; color: #202124; margin: 0 0 16px 0; padding-bottom: 6px; border-bottom: 1px solid #e8eaed; }
+    .store-top-view .apps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px; }
+    
+    @container (max-width: 600px) {
+        .store-top-view .apps-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+        .store-top-view .navbar-container { flex-direction: column; align-items: flex-start; }
+        .store-top-view .nav-menu { width: 100%; justify-content: space-between; margin-top: 4px; }
+    }
+    
+    .store-top-view .app-card { background-color: #ffffff; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e8eaed; position: relative; transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s, filter 0.2s; }
+    .store-top-view .app-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    
+    .store-top-view .app-card.private-dimmed { opacity: 0.55; filter: grayscale(85%); }
+    .store-top-view .app-card.private-dimmed:hover { opacity: 0.8; filter: grayscale(30%); }
+    
+    .store-top-view .screenshot-wrapper { width: 100%; aspect-ratio: 2 / 3; position: relative; background-color: #e2e4e7; overflow: hidden; }
+    .store-top-view .screenshot-img { width: 100%; height: 100%; object-fit: cover; }
+    .store-top-view .private-badge { position: absolute; top: 8px; right: 8px; background-color: #d93025; color: #ffffff; font-size: 10px; font-weight: bold; padding: 3px 6px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10; letter-spacing: 0.5px; }
+    
+    .store-top-view .app-card-details { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1; justify-content: space-between; }
+    .store-top-view .app-meta { display: flex; align-items: center; gap: 8px; width: 100%; overflow: hidden; }
+    .store-top-view .app-icon { width: 26px; height: 26px; border-radius: 6px; object-fit: cover; background-color: #f1f3f4; flex-shrink: 0; }
+    .store-top-view .app-name { font-size: 13px; font-weight: bold; color: #202124; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; }
+    .store-top-view .app-desc { font-size: 11px; color: #5f6368; margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; }
+    
+    .store-top-view .device-tabs { display: flex; gap: 4px; }
+    .store-top-view .device-tab { font-size: 9px; padding: 2px 5px; border-radius: 3px; font-weight: bold; background-color: #f1f3f4; color: #bdc1c6; border: 1px solid #e8eaed; box-sizing: border-box; }
+    .store-top-view .device-tab.active { background-color: #e6f3ef; color: #01875f; border-color: #c2e2d6; }
 </style>
 </head>
 <body>
 
-<div id="editor-panel">
-    <h2 class="editor-title">ページエディタ V4.1</h2>
-    
-    <div id="file-loader-area">
-        📁 既存のHTMLファイルをここにドロップ<br>
-        <input type="file" id="html-file-input" accept=".html" style="margin-top:10px; width:auto;">
-    </div>
+    <div id="editor-panel"></div>
+    <div id="resizer"></div>
+    <div id="preview-panel" style="container-type: inline-size;"></div>
 
-    <div class="section-title">基本設定 (共通)</div>
-    <div class="editor-group">
-        <label>起動元アプリ URL</label>
-        <div class="help-text">ストア画面の「Webアプリを起動」ボタンを押したときのジャンプ先のURLです。(例: NamaMeto本体のURL)</div>
-        <input type="text" id="ed-appUrl">
-    </div>
-    <div class="editor-group">
-        <label>アプリアイコン URL</label>
-        <div class="help-text">ストア画面の左上に表示される大きなメイン画像のファイル名（またはURL）です。</div>
-        <input type="text" id="ed-appIcon">
-    </div>
-
-    <div class="section-title">テキスト設定 (日本語 JA)</div>
-    <div class="editor-group"><label>アプリ名</label><input type="text" id="ed-ja-title"></div>
-    <div class="editor-group"><label>開発者名</label><input type="text" id="ed-ja-developer"></div>
-    <div class="editor-group"><label>ボタンテキスト</label><input type="text" id="ed-ja-btn"></div>
-    <div class="editor-group"><label>スクショ見出し</label><input type="text" id="ed-ja-sc"></div>
-    <div class="editor-group"><label>更新枠見出し</label><input type="text" id="ed-ja-whatsnew-title"></div>
-    <div class="editor-group"><label>更新日</label><input type="text" id="ed-ja-whatsnew-date"></div>
-    <div class="editor-group"><label>更新内容 (空欄で枠ごと非表示)</label><textarea id="ed-ja-whatsnew-desc"></textarea></div>
-    <div class="editor-group"><label>説明文 (改行・HTMLタグ可)</label><textarea id="ed-ja-desc"></textarea></div>
-    
-    <div class="section-title">テキスト設定 (英語 EN)</div>
-    <button id="translate-btn" class="translate-btn" onclick="translateEmptyFields()">🌐 空欄を自動翻訳 (JA→EN)</button>
-    <div class="editor-group"><label>App Name</label><input type="text" id="ed-en-title"></div>
-    <div class="editor-group"><label>Developer</label><input type="text" id="ed-en-developer"></div>
-    <div class="editor-group"><label>Button Text</label><input type="text" id="ed-en-btn"></div>
-    <div class="editor-group"><label>Screenshots Title</label><input type="text" id="ed-en-sc"></div>
-    <div class="editor-group"><label>What's New Title</label><input type="text" id="ed-en-whatsnew-title"></div>
-    <div class="editor-group"><label>Date</label><input type="text" id="ed-en-whatsnew-date"></div>
-    <div class="editor-group"><label>What's New Desc</label><textarea id="ed-en-whatsnew-desc"></textarea></div>
-    <div class="editor-group"><label>Description</label><textarea id="ed-en-desc"></textarea></div>
-
-    <div class="section-title">メディア設定 (スクショ・動画)</div>
-    <div class="help-text">ファイル名、またはYouTube URLを入力してください。<br>※拡大画面への画像/動画ファイルドロップでも上書きできます。</div>
-    <div id="media-list-container"></div>
-    <button class="add-btn" onclick="addMediaItem()">＋ メディア枠を追加</button>
-
-    <div class="section-title">他のアプリ設定</div>
-    <div class="editor-group"><label>他アプリ枠の見出し(JA)</label><input type="text" id="ed-ja-more"></div>
-    <div class="editor-group"><label>他アプリ枠の見出し(EN)</label><input type="text" id="ed-en-more"></div>
-    <div id="more-apps-list-container"></div>
-    <button class="add-btn" onclick="addMoreAppItem()">＋ 他のアプリ枠を追加</button>
-
-    <button class="export-btn" onclick="exportHTML()">📥 更新したHTMLファイルを保存</button>
-</div>
-
-<div id="resizer"></div>
-
-<div id="preview-panel">
-    <div id="app-container">
-        <button class="lang-toggle" onclick="toggleLanguage()">EN / JP</button>
-        <div class="header-section">
-            <img id="ui-app-icon" class="app-icon" src="" alt="App Icon">
-            <div class="app-info">
-                <h1 id="ui-title" class="app-title"></h1>
-                <p id="ui-developer" class="app-developer"></p>
-            </div>
-        </div>
-        <div class="action-section">
-            <a id="ui-action-btn" class="btn-install" href="#" target="_blank"></a>
-        </div>
-        <div class="screenshots-section">
-            <h2 id="ui-screenshots-title" class="preview-title"></h2>
-            <div id="ui-gallery" class="gallery-scroll"></div>
-        </div>
-        
-        <div class="whatsnew-section" id="ui-whatsnew-section" style="display: none;">
-            <div class="whatsnew-box">
-                <div class="whatsnew-header">
-                    <h3 id="ui-whatsnew-title" class="whatsnew-title"></h3>
-                    <span id="ui-whatsnew-date" class="whatsnew-date"></span>
-                </div>
-                <div id="ui-whatsnew-desc" class="whatsnew-text"></div>
-            </div>
-        </div>
-
-        <div class="description-section">
-            <div id="ui-description" class="description-text"></div>
-        </div>
-        <div class="more-apps-section">
-            <h2 id="ui-more-apps-title" class="preview-title"></h2>
-            <div id="ui-more-apps-grid" class="more-apps-grid"></div>
-        </div>
-    </div>
-</div>
-
-<div id="lightbox">
-    <button class="close-btn" onclick="closeLightbox()">×</button>
-    <img id="lightbox-img" src="" alt="Enlarged Screenshot">
-    <div id="lightbox-video"></div>
-    <div class="lightbox-controls">
-        <button class="nav-btn" onclick="prevMedia(event)">◀</button>
-        <button class="nav-btn" onclick="nextMedia(event)">▶</button>
-    </div>
-    <div class="lightbox-hint">表示中の枠へ画像や動画ファイルをドロップして配置できます<br>(スワイプで次へ移動)</div>
-</div>
-
-<textarea id="export-template" style="display:none;">
-<!DOCTYPE html>
+    <script>
+        // =========================================
+        // 3. エクスポート用HTMLテンプレート
+        // =========================================
+        const EXPORT_TEMPLATE = `<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NamaMeto Download Page</title>
+<title>GLOBAL_SITE_NAME</title>
 <style>
-    :root { --primary-color: #01875f; --bg-color: #ffffff; --text-main: #202124; --text-sub: #5f6368; --border-color: #e8eaed; --btn-radius: 8px; }
-    body { font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: var(--text-main); }
-    #app-container { max-width: 480px; margin: 0 auto; background-color: var(--bg-color); min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.1); padding-bottom: 40px; position: relative; }
-    .header-section { padding: 24px 100px 24px 24px; display: flex; gap: 16px; }
-    .app-icon { width: 72px; height: 72px; border-radius: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.2); object-fit: cover; }
-    .app-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-    .app-title { font-size: 24px; font-weight: bold; margin: 0 0 4px 0; line-height: 1.2; }
-    .app-developer { color: var(--primary-color); font-size: 14px; font-weight: bold; margin: 0; }
-    .action-section { padding: 0 24px 24px 24px; }
-    .btn-install { display: block; width: 100%; padding: 12px 0; background-color: var(--primary-color); color: white; text-align: center; text-decoration: none; border-radius: var(--btn-radius); font-size: 14px; font-weight: bold; border: none; cursor: pointer; }
-    .screenshots-section { padding: 0 0 24px 24px; overflow: hidden; }
-    .section-title { font-size: 18px; font-weight: bold; margin: 0 0 16px 0; padding-right: 24px;}
-    .gallery-scroll { display: flex; gap: 12px; overflow-x: auto; padding-right: 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
-    .gallery-scroll::-webkit-scrollbar { display: none; }
-    .gallery-item-wrapper { position: relative; flex: 0 0 auto; cursor: pointer; scroll-snap-align: start; }
-    .gallery-item { height: 250px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color); display: block; background: #000; }
-    .img-portrait { width: 140px; }
-    .img-landscape { width: 250px; }
-    .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 48px; height: 48px; background-color: rgba(0,0,0,0.6); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; padding-left: 4px; box-sizing: border-box; }
+    body { margin: 0; padding: 0; background-color: #f2f2f2; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: #202124; }
+    .navbar { position: sticky; top: 0; background-color: #ffffff; border-bottom: 1px solid #e8eaed; z-index: 1000; min-height: 56px; display: flex; align-items: center; padding: 8px 16px; box-sizing: border-box; }
+    .navbar-container { width: 100%; max-width: 960px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .navbar-left { display: flex; align-items: center; gap: 12px; }
+    .brand-logo { height: 28px; width: auto; object-fit: contain; }
+    .brand-name { font-size: 16px; font-weight: bold; color: #202124; }
+    .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; gap: 20px; }
+    .nav-item { display: flex; align-items: center; position: relative; padding: 6px 2px; }
+    .nav-link { text-decoration: none; color: #5f6368; font-size: 13px; font-weight: bold; transition: color 0.2s; }
+    .nav-link:hover { color: #01875f; }
+    .nav-item.active .nav-link { color: #01875f; }
+    .nav-item.active::after { content: ''; position: absolute; bottom: -8px; left: 0; right: 0; height: 3px; background-color: #01875f; border-top-left-radius: 3px; border-top-right-radius: 3px; }
     
-    .whatsnew-section { padding: 0 24px 24px 24px; }
-    .whatsnew-box { background-color: #f1f8f6; border: 1px solid #cce8e0; border-radius: 8px; padding: 16px; }
-    .whatsnew-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
-    .whatsnew-title { font-size: 16px; font-weight: bold; margin: 0; color: var(--primary-color); }
-    .whatsnew-date { font-size: 13px; color: var(--text-sub); }
-    .whatsnew-text { font-size: 14px; line-height: 1.6; color: var(--text-sub); white-space: pre-wrap; }
+    .main-content { max-width: 960px; margin: 0 auto; padding: 24px 16px; box-sizing: border-box; }
+    .intro-section { margin-bottom: 24px; background: #fff; padding: 14px 16px; border-radius: 8px; border: 1px solid #e8eaed; }
+    .intro-text { margin: 0; font-size: 13px; color: #5f6368; line-height: 1.5; white-space: pre-wrap; }
+    
+    .genre-section { margin-bottom: 32px; }
+    .genre-title { font-size: 16px; font-weight: bold; color: #202124; margin: 0 0 16px 0; padding-bottom: 6px; border-bottom: 1px solid #e8eaed; }
+    .apps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px; }
+    
+    .app-card { background-color: #ffffff; border-radius: 8px; overflow: hidden; text-decoration: none; color: inherit; display: flex; flex-direction: column; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e8eaed; position: relative; transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s, filter 0.2s; }
+    .app-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    .app-card.private-dimmed { opacity: 0.55; filter: grayscale(85%); }
+    .app-card.private-dimmed:hover { opacity: 0.8; filter: grayscale(30%); }
 
-    .description-section { padding: 0 24px 24px 24px; }
-    .description-text { font-size: 14px; line-height: 1.6; color: var(--text-sub); white-space: pre-wrap; }
-    .description-text a { color: var(--primary-color); text-decoration: none; font-weight: bold; }
-    .more-apps-section { padding: 24px; border-top: 1px solid var(--border-color); }
-    .more-apps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 16px; }
-    .more-app-card { text-align: center; text-decoration: none; color: inherit; display: block;}
-    .more-app-icon { width: 64px; height: 64px; border-radius: 12px; margin-bottom: 8px; object-fit: cover; }
-    .more-app-name { font-size: 12px; color: var(--text-sub); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .lang-toggle { position: absolute; top: 24px; right: 24px; background: transparent; border: 1px solid var(--border-color); border-radius: 16px; padding: 4px 12px; font-size: 12px; color: var(--text-sub); cursor: pointer; background-color: var(--bg-color); z-index: 10; }
-    #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; box-sizing: border-box; }
-    #lightbox.active { display: flex; }
-    #lightbox-img { max-width: 90%; max-height: 80vh; object-fit: contain; border-radius: 4px; transition: opacity 0.2s; display: none; }
-    #lightbox-video { width: 100%; max-width: 800px; aspect-ratio: 16 / 9; transition: opacity 0.2s; display: none; background: transparent; }
-    #lightbox-video iframe, #lightbox-video video { width: 100%; height: 100%; border: none; max-height: 80vh; outline: none; object-fit: contain; }
-    .lightbox-controls { display: flex; justify-content: space-between; width: 100%; position: absolute; top: 50%; transform: translateY(-50%); padding: 0 20px; box-sizing: border-box; pointer-events: none; z-index: 1001;}
-    .nav-btn { background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 20px; cursor: pointer; pointer-events: auto; }
-    .close-btn { position: absolute; top: 20px; right: 20px; background: transparent; color: white; border: none; font-size: 32px; cursor: pointer; z-index: 1001;}
-    .swipe-hint { color: rgba(255,255,255,0.5); font-size: 12px; position: absolute; bottom: 40px; }
+    .screenshot-wrapper { width: 100%; aspect-ratio: 2 / 3; position: relative; background-color: #e2e4e7; overflow: hidden; }
+    .screenshot-img { width: 100%; height: 100%; object-fit: cover; }
+    .private-badge { position: absolute; top: 8px; right: 8px; background-color: #d93025; color: #ffffff; font-size: 10px; font-weight: bold; padding: 3px 6px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10; letter-spacing: 0.5px; }
+    
+    .app-card-details { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1; justify-content: space-between; }
+    .app-meta { display: flex; align-items: center; gap: 8px; width: 100%; overflow: hidden; }
+    .app-icon { width: 26px; height: 26px; border-radius: 6px; object-fit: cover; background-color: #f1f3f4; flex-shrink: 0; }
+    .app-name { font-size: 13px; font-weight: bold; color: #202124; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; }
+    .app-desc { font-size: 11px; color: #5f6368; margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-wrap; }
+    
+    .device-tabs { display: flex; gap: 4px; }
+    .device-tab { font-size: 9px; padding: 2px 5px; border-radius: 3px; font-weight: bold; background-color: #f1f3f4; color: #bdc1c6; border: 1px solid #e8eaed; box-sizing: border-box; }
+    .device-tab.active { background-color: #e6f3ef; color: #01875f; border-color: #c2e2d6; }
+
+    @media (max-width: 600px) {
+        .navbar { padding: 8px 12px; }
+        .navbar-container { flex-direction: column; align-items: flex-start; gap: 8px; }
+        .nav-menu { width: 100%; justify-content: space-between; gap: 0; }
+        .nav-item { padding: 4px 0; }
+        .nav-item.active::after { bottom: -4px; }
+        .main-content { padding: 16px 12px; }
+        .apps-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .app-card-details { padding: 8px; gap: 6px; }
+        .app-name { font-size: 12px; }
+    }
 </style>
 </head>
 <body>
-<script>
-const APP_CONFIG = /*%%%APP_CONFIG_JSON%%%*/;
-let currentLang = 'ja';
-</script>
+    <div id="store-root"></div>
+    <script id="namameto-store-data" type="text/plain">DATA_B64_PLACEHOLDER<\/script>
+    <script>
+        (function() {
+            try {
+                const dataNode = document.getElementById('namameto-store-data');
+                if (!dataNode) return;
+                
+                const rawB64 = dataNode.textContent.trim();
+                const jsonString = decodeURIComponent(escape(atob(rawB64)));
+                const config = JSON.parse(jsonString);
+                
+                function escapeHtml(str) {
+                    if (!str) return '';
+                    return str.replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+                }
 
-<div id="app-container">
-    <button class="lang-toggle" onclick="toggleLanguage()">EN / JP</button>
-    <div class="header-section">
-        <img id="ui-app-icon" class="app-icon" src="" alt="App Icon">
-        <div class="app-info">
-            <h1 id="ui-title" class="app-title"></h1>
-            <p id="ui-developer" class="app-developer"></p>
-        </div>
-    </div>
-    <div class="action-section">
-        <a id="ui-action-btn" class="btn-install" href="#" target="_blank"></a>
-    </div>
-    <div class="screenshots-section">
-        <h2 id="ui-screenshots-title" class="section-title"></h2>
-        <div id="ui-gallery" class="gallery-scroll"></div>
-    </div>
-    
-    <div class="whatsnew-section" id="ui-whatsnew-section" style="display: none;">
-        <div class="whatsnew-box">
-            <div class="whatsnew-header">
-                <h3 id="ui-whatsnew-title" class="whatsnew-title"></h3>
-                <span id="ui-whatsnew-date" class="whatsnew-date"></span>
-            </div>
-            <div id="ui-whatsnew-desc" class="whatsnew-text"></div>
-        </div>
-    </div>
+                // URLが絶対パス(http等)か判定し、フォルダパスを賢く結合する関数
+                function resolvePath(baseFolder, filePath) {
+                    if (!filePath) return '';
+                    if (filePath.startsWith('http://') || filePath.startsWith('https://') || filePath.startsWith('data:')) {
+                        return filePath;
+                    }
+                    const prefix = baseFolder ? (baseFolder.endsWith('/') ? baseFolder : baseFolder + '/') : '';
+                    return prefix + filePath;
+                }
 
-    <div class="description-section">
-        <div id="ui-description" class="description-text"></div>
-    </div>
-    <div class="more-apps-section">
-        <h2 id="ui-more-apps-title" class="section-title"></h2>
-        <div id="ui-more-apps-grid" class="more-apps-grid"></div>
-    </div>
-</div>
+                let genresHtml = '';
+                (config.genres || []).forEach(genre => {
+                    let appsHtml = '';
+                    (genre.apps || []).forEach(app => {
+                        const privateBadge = app.isPrivate ? \`<div class="private-badge">非公開</div>\` : '';
+                        const privateDimClass = app.isPrivate ? 'private-dimmed' : '';
+                        
+                        const devs = app.devices || { smart: false, tablet: false, pc: false };
+                        const smartClass = devs.smart ? 'active' : '';
+                        const tabletClass = devs.tablet ? 'active' : '';
+                        const pcClass = devs.pc ? 'active' : '';
+                        const descHtml = app.intro ? \`<p class="app-desc">\${escapeHtml(app.intro)}</p>\` : '';
+                        
+                        // パスの結合
+                        const finalUrl = resolvePath(app.folder, app.url) || '#';
+                        const finalIcon = resolvePath(app.folder, app.icon);
+                        const finalScreenshot = resolvePath(app.folder, app.screenshot);
+                        
+                        appsHtml += \`
+                            <a href="\${escapeHtml(finalUrl)}" class="app-card \${privateDimClass}">
+                                <div class="screenshot-wrapper">
+                                    \${privateBadge}
+                                    <img src="\${escapeHtml(finalScreenshot)}" class="screenshot-img" onerror="this.style.display='none';">
+                                </div>
+                                <div class="app-card-details">
+                                    <div class="app-meta">
+                                        <img src="\${escapeHtml(finalIcon)}" class="app-icon" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'32\\' height=\\'32\\' viewBox=\\'0 0 32 32\\'><rect width=\\'32\\' height=\\'32\\' fill=\\'%23f1f3f4\\'/><circle cx=\\'16\\' cy=\\'16\\' r=\\'8\\' fill=\\'%23bdc1c6\\'/></svg>';">
+                                        <h3 class="app-name">\${escapeHtml(app.name || '未命名アプリ')}</h3>
+                                    </div>
+                                    \${descHtml}
+                                    <div class="device-tabs">
+                                        <span class="device-tab \${smartClass}">スマ</span>
+                                        <span class="device-tab \${tabletClass}">タブ</span>
+                                        <span class="device-tab \${pcClass}">ＰＣ</span>
+                                    </div>
+                                </div>
+                            </a>
+                        \`;
+                    });
 
-<div id="lightbox">
-    <button class="close-btn" onclick="closeLightbox()">×</button>
-    <img id="lightbox-img" src="" alt="Enlarged Screenshot">
-    <div id="lightbox-video"></div>
-    <div class="lightbox-controls">
-        <button class="nav-btn" onclick="prevMedia(event)">◀</button>
-        <button class="nav-btn" onclick="nextMedia(event)">▶</button>
-    </div>
-    <div class="swipe-hint">Swipe to navigate</div>
-</div>
+                    genresHtml += \`
+                        <section class="genre-section">
+                            <h2 class="genre-title">\${escapeHtml(genre.name || '未命名ジャンル')}</h2>
+                            <div class="apps-grid">
+                                \${appsHtml || '<div style="grid-column: 1/-1; color:#5f6368; font-size:13px; padding:16px 0;">アプリがありません</div>'}
+                            </div>
+                        </section>
+                    \`;
+                });
 
-<script>
-const getBlankImgSvg = (num) => `data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600'%3E%3Crect width='100%25' height='100%25' fill='%23e8eaed'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='24' fill='%239aa0a6' text-anchor='middle' dominant-baseline='middle'%3ENo Image ${num}%3C/text%3E%3C/svg%3E`;
-const BLANK_ICON_SVG = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23e8eaed'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='24' fill='%239aa0a6' text-anchor='middle' dominant-baseline='middle'%3EIcon%3C/text%3E%3C/svg%3E";
+                const introHtml = config.siteIntro ? \`<div class="intro-section"><p class="intro-text">\${escapeHtml(config.siteIntro)}</p></div>\` : '';
 
-function renderUI() {
-    const textData = APP_CONFIG[currentLang];
-    document.getElementById('ui-title').innerText = textData.title || "";
-    document.getElementById('ui-developer').innerText = textData.developer || "";
-    const mainIcon = document.getElementById('ui-app-icon');
-    mainIcon.src = APP_CONFIG.appIcon;
-    mainIcon.onerror = () => { mainIcon.onerror = null; mainIcon.src = BLANK_ICON_SVG; };
-    
-    const actionBtn = document.getElementById('ui-action-btn');
-    actionBtn.innerText = textData.buttonText || "";
-    actionBtn.href = APP_CONFIG.appUrl || "#";
-    
-    document.getElementById('ui-screenshots-title').innerText = textData.screenshotsTitle || "";
-    document.getElementById('ui-description').innerHTML = textData.description || "";
-    document.getElementById('ui-more-apps-title').innerText = textData.moreAppsTitle || "";
-    
-    const whatsnewSec = document.getElementById('ui-whatsnew-section');
-    if (textData.whatsnewDesc && textData.whatsnewDesc.trim() !== "") {
-        whatsnewSec.style.display = 'block';
-        document.getElementById('ui-whatsnew-title').innerText = textData.whatsnewTitle || "";
-        document.getElementById('ui-whatsnew-date').innerText = textData.whatsnewDate || "";
-        document.getElementById('ui-whatsnew-desc').innerText = textData.whatsnewDesc || "";
-    } else {
-        whatsnewSec.style.display = 'none';
-    }
-    
-    const gallery = document.getElementById('ui-gallery');
-    if (gallery.innerHTML.trim() === "") {
-        APP_CONFIG.media.forEach((item, index) => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'gallery-item-wrapper';
-            wrapper.onclick = () => openLightbox(index);
-            
-            if (item.type === 'youtube') {
-                const img = document.createElement('img');
-                img.className = 'gallery-item img-landscape';
-                img.src = `https://img.youtube.com/vi/${item.id}/hqdefault.jpg`;
-                wrapper.appendChild(img);
-                const playIcon = document.createElement('div');
-                playIcon.className = 'play-icon'; playIcon.innerHTML = '▶';
-                wrapper.appendChild(playIcon);
-            } else if (item.type === 'video') {
-                const video = document.createElement('video');
-                video.className = 'gallery-item img-portrait';
-                video.src = item.src;
-                video.preload = 'metadata';
-                wrapper.appendChild(video);
-                const playIcon = document.createElement('div');
-                playIcon.className = 'play-icon'; playIcon.innerHTML = '▶';
-                wrapper.appendChild(playIcon);
-            } else {
-                const img = document.createElement('img');
-                img.className = 'gallery-item img-portrait';
-                img.src = item.src;
-                img.onerror = () => { img.onerror = null; img.src = getBlankImgSvg(index + 1); };
-                wrapper.appendChild(img);
+                document.getElementById('store-root').innerHTML = \`
+                    <header class="navbar">
+                        <div class="navbar-container">
+                            <div class="navbar-left">
+                                <img src="\${escapeHtml(config.logoSrc)}" class="brand-logo" onerror="this.style.display='none';">
+                                <span class="brand-name">\${escapeHtml(config.siteName)}</span>
+                            </div>
+                            <nav>
+                                <ul class="nav-menu">
+                                    <li class="nav-item active"><a href="#" class="nav-link">アプリ</a></li>
+                                    <li class="nav-item"><a href="#" class="nav-link">寄付について</a></li>
+                                    <li class="nav-item"><a href="#" class="nav-link">作者</a></li>
+                                    <li class="nav-item"><a href="#" class="nav-link">お問い合わせ</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </header>
+                    <main class="main-content">
+                        \${introHtml}
+                        \${genresHtml || '<div style="color:#5f6368; text-align:center; padding:40px 0;">ジャンルが設定されていません。</div>'}
+                    </main>
+                \`;
+            } catch (err) {
+                console.error("データのパースに失敗しました", err);
             }
-            gallery.appendChild(wrapper);
-        });
-    }
-
-    const moreAppsGrid = document.getElementById('ui-more-apps-grid');
-    moreAppsGrid.innerHTML = "";
-    if(APP_CONFIG.moreApps) {
-        APP_CONFIG.moreApps.forEach(app => {
-            const a = document.createElement('a');
-            a.className = 'more-app-card';
-            a.href = app.url;
-            const img = document.createElement('img');
-            img.className = 'more-app-icon';
-            img.src = app.icon;
-            img.onerror = () => { img.onerror = null; img.src = BLANK_ICON_SVG; };
-            const span = document.createElement('span');
-            span.className = 'more-app-name';
-            span.innerText = textData.moreAppNames ? (textData.moreAppNames[app.id] || "") : "";
-            a.appendChild(img);
-            a.appendChild(span);
-            moreAppsGrid.appendChild(a);
-        });
-    }
-}
-
-function toggleLanguage() { currentLang = currentLang === 'ja' ? 'en' : 'ja'; renderUI(); }
-
-let currentMediaIndex = 0;
-const lightbox = document.getElementById('lightbox');
-const lightboxImg = document.getElementById('lightbox-img');
-const lightboxVideo = document.getElementById('lightbox-video');
-
-function openLightbox(index) { currentMediaIndex = index; updateLightboxMedia(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
-function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; lightboxVideo.innerHTML = ''; }
-function updateLightboxMedia() {
-    const item = APP_CONFIG.media[currentMediaIndex];
-    lightboxImg.style.opacity = '0'; lightboxVideo.style.opacity = '0'; lightboxVideo.innerHTML = ''; 
-    setTimeout(() => {
-        if (item.type === 'youtube') {
-            lightboxImg.style.display = 'none'; lightboxVideo.style.display = 'block';
-            lightboxVideo.innerHTML = `<iframe src="https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-            lightboxVideo.style.opacity = '1';
-        } else if (item.type === 'video') {
-            lightboxImg.style.display = 'none'; lightboxVideo.style.display = 'block';
-            lightboxVideo.innerHTML = `<video src="${item.src}" controls autoplay style="width:100%; height:100%; max-height:80vh; object-fit:contain; outline:none;"></video>`;
-            lightboxVideo.style.opacity = '1';
-        } else {
-            lightboxVideo.style.display = 'none'; lightboxImg.style.display = 'block';
-            const tempImg = new Image();
-            tempImg.src = item.src;
-            tempImg.onload = () => { lightboxImg.src = tempImg.src; lightboxImg.style.opacity = '1'; };
-            tempImg.onerror = () => { lightboxImg.src = getBlankImgSvg(currentMediaIndex + 1); lightboxImg.style.opacity = '1'; };
-        }
-    }, 150);
-}
-function prevMedia(e) { if(e) e.stopPropagation(); currentMediaIndex = (currentMediaIndex > 0) ? currentMediaIndex - 1 : APP_CONFIG.media.length - 1; updateLightboxMedia(); }
-function nextMedia(e) { if(e) e.stopPropagation(); currentMediaIndex = (currentMediaIndex < APP_CONFIG.media.length - 1) ? currentMediaIndex + 1 : 0; updateLightboxMedia(); }
-
-lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
-let touchStartX = 0; let touchEndX = 0;
-lightbox.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
-lightbox.addEventListener('touchend', e => {
-    touchEndX = e.changedTouches[0].screenX;
-    const swipeThreshold = 50;
-    if (touchEndX < touchStartX - swipeThreshold) nextMedia();
-    if (touchEndX > touchStartX + swipeThreshold) prevMedia();
-});
-window.onload = renderUI;
-</script>
+        })();
+    <\/script>
 </body>
-</html>
-</textarea>
+</html>`;
 
-<script>
-const GAS_TRANSLATE_URL = "https://script.google.com/macros/s/AKfycbz1pZMs31cjfWC7mEf3n8_qWxV7zaY0ETxZmd7z4hW5bogBnsozLeSvsWU6F6a9WbMQ/exec";
+        // =========================================
+        // 4. エディタ制御ロジック
+        // =========================================
+        const STORAGE_KEY_V5 = 'namaStudioStoreData_v5';
+        const STORAGE_KEY_V4 = 'namaStudioStoreData_v4'; // 後方互換用
 
-let APP_CONFIG = {
-    appUrl: "", appIcon: "", media: [ { type: "image", src: "" } ], moreApps: [],
-    ja: { title: "", developer: "", buttonText: "", screenshotsTitle: "", whatsnewTitle: "最新の更新内容", whatsnewDate: "", whatsnewDesc: "", moreAppsTitle: "", description: "", moreAppNames: {} },
-    en: { title: "", developer: "", buttonText: "", screenshotsTitle: "", whatsnewTitle: "What's New", whatsnewDate: "", whatsnewDesc: "", moreAppsTitle: "", description: "", moreAppNames: {} }
-};
-let currentLang = 'ja';
+        const DEFAULT_CONFIG = {
+            siteName: "Nama Studio ─ナマスタ─",
+            siteIntro: "自作アプリの公開ポータルサイトです。音楽系アプリや便利ツールなどを公開しています。",
+            logoSrc: "NamaStudioLogoHalf.png",
+            genres: [
+                {
+                    id: "genre_1",
+                    name: "音楽系",
+                    apps: [
+                        {
+                            id: "app_1",
+                            folder: "apps/namameto", // デフォルトのフォルダ階層例
+                            name: "NamaMeto App",
+                            intro: "直感的に操作できるシンプルな音楽アプリです。",
+                            url: "NamaMetoStore.html",
+                            icon: "NamaStudioLogoHalf.png",
+                            screenshot: "",
+                            devices: { smart: true, tablet: true, pc: false },
+                            isPrivate: false
+                        }
+                    ]
+                }
+            ]
+        };
 
-function initEditor() {
-    document.getElementById('ed-appUrl').value = APP_CONFIG.appUrl || "";
-    document.getElementById('ed-appIcon').value = APP_CONFIG.appIcon || "";
-    
-    document.getElementById('ed-ja-title').value = APP_CONFIG.ja.title || "";
-    document.getElementById('ed-ja-developer').value = APP_CONFIG.ja.developer || "";
-    document.getElementById('ed-ja-btn').value = APP_CONFIG.ja.buttonText || "";
-    document.getElementById('ed-ja-sc').value = APP_CONFIG.ja.screenshotsTitle || "";
-    document.getElementById('ed-ja-whatsnew-title').value = APP_CONFIG.ja.whatsnewTitle || "";
-    document.getElementById('ed-ja-whatsnew-date').value = APP_CONFIG.ja.whatsnewDate || "";
-    document.getElementById('ed-ja-whatsnew-desc').value = APP_CONFIG.ja.whatsnewDesc || "";
-    document.getElementById('ed-ja-more').value = APP_CONFIG.ja.moreAppsTitle || "";
-    document.getElementById('ed-ja-desc').value = APP_CONFIG.ja.description || "";
+        let APP_CONFIG = null;
 
-    document.getElementById('ed-en-title').value = APP_CONFIG.en.title || "";
-    document.getElementById('ed-en-developer').value = APP_CONFIG.en.developer || "";
-    document.getElementById('ed-en-btn').value = APP_CONFIG.en.buttonText || "";
-    document.getElementById('ed-en-sc').value = APP_CONFIG.en.screenshotsTitle || "";
-    document.getElementById('ed-en-whatsnew-title').value = APP_CONFIG.en.whatsnewTitle || "";
-    document.getElementById('ed-en-whatsnew-date').value = APP_CONFIG.en.whatsnewDate || "";
-    document.getElementById('ed-en-whatsnew-desc').value = APP_CONFIG.en.whatsnewDesc || "";
-    document.getElementById('ed-en-more').value = APP_CONFIG.en.moreAppsTitle || "";
-    document.getElementById('ed-en-desc').value = APP_CONFIG.en.description || "";
+        function initApp() {
+            // V5キーを優先、なければV4キーからデータを引き継ぐ
+            let saved = localStorage.getItem(STORAGE_KEY_V5) || localStorage.getItem(STORAGE_KEY_V4);
+            if (saved) {
+                try { APP_CONFIG = mergeWithDefault(JSON.parse(saved)); } catch(e) {}
+            }
+            if (!APP_CONFIG) APP_CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+            
+            renderEditor();
+            renderPreview();
+        }
 
-    renderMediaEditor(); renderMoreAppsEditor(); attachGlobalListeners();
-}
+        function saveToStorage() {
+            localStorage.setItem(STORAGE_KEY_V5, JSON.stringify(APP_CONFIG));
+        }
 
-function attachGlobalListeners() {
-    document.querySelectorAll('#editor-panel input:not(#html-file-input), #editor-panel textarea, #editor-panel select').forEach(el => {
-        el.oninput = () => { updateConfigFromEditor(); renderUI(); };
-    });
-}
+        function resetData() {
+            if(confirm("入力内容をすべて消去して初期状態に戻しますか？\n（※エクスポート済みのファイルには影響しません）")) {
+                localStorage.removeItem(STORAGE_KEY_V5);
+                localStorage.removeItem(STORAGE_KEY_V4);
+                APP_CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+                renderEditor();
+                renderPreview();
+            }
+        }
 
-function extractYouTubeID(url) {
-    const match = url.match(/(?:v=|youtu\.be\/|embed\/)([^&?]+)/);
-    return match ? match[1] : url;
-}
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+        }
 
-function updateConfigFromEditor() {
-    APP_CONFIG.appUrl = document.getElementById('ed-appUrl').value;
-    APP_CONFIG.appIcon = document.getElementById('ed-appIcon').value;
-    
-    APP_CONFIG.ja.title = document.getElementById('ed-ja-title').value;
-    APP_CONFIG.ja.developer = document.getElementById('ed-ja-developer').value;
-    APP_CONFIG.ja.buttonText = document.getElementById('ed-ja-btn').value;
-    APP_CONFIG.ja.screenshotsTitle = document.getElementById('ed-ja-sc').value;
-    APP_CONFIG.ja.whatsnewTitle = document.getElementById('ed-ja-whatsnew-title').value;
-    APP_CONFIG.ja.whatsnewDate = document.getElementById('ed-ja-whatsnew-date').value;
-    APP_CONFIG.ja.whatsnewDesc = document.getElementById('ed-ja-whatsnew-desc').value;
-    APP_CONFIG.ja.moreAppsTitle = document.getElementById('ed-ja-more').value;
-    APP_CONFIG.ja.description = document.getElementById('ed-ja-desc').value;
+        // URLが絶対パスか判定し、フォルダパスを結合する関数
+        function resolvePath(baseFolder, filePath) {
+            if (!filePath) return '';
+            if (filePath.startsWith('http://') || filePath.startsWith('https://') || filePath.startsWith('data:')) {
+                return filePath;
+            }
+            const prefix = baseFolder ? (baseFolder.endsWith('/') ? baseFolder : baseFolder + '/') : '';
+            return prefix + filePath;
+        }
 
-    APP_CONFIG.en.title = document.getElementById('ed-en-title').value;
-    APP_CONFIG.en.developer = document.getElementById('ed-en-developer').value;
-    APP_CONFIG.en.buttonText = document.getElementById('ed-en-btn').value;
-    APP_CONFIG.en.screenshotsTitle = document.getElementById('ed-en-sc').value;
-    APP_CONFIG.en.whatsnewTitle = document.getElementById('ed-en-whatsnew-title').value;
-    APP_CONFIG.en.whatsnewDate = document.getElementById('ed-en-whatsnew-date').value;
-    APP_CONFIG.en.whatsnewDesc = document.getElementById('ed-en-whatsnew-desc').value;
-    APP_CONFIG.en.moreAppsTitle = document.getElementById('ed-en-more').value;
-    APP_CONFIG.en.description = document.getElementById('ed-en-desc').value;
+        function encodeBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
+        function decodeBase64(str) { return decodeURIComponent(escape(atob(str))); }
 
-    APP_CONFIG.media = Array.from(document.querySelectorAll('.media-item')).map(item => {
-        const type = item.querySelector('.media-type').value;
-        const val = item.querySelector('.media-val').value;
-        const tempUrl = item.dataset.tempUrl || "";
+        function mergeWithDefault(loadedData) {
+            if (!loadedData || typeof loadedData !== 'object') return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+            let merged = {};
+            merged.siteName = loadedData.siteName || DEFAULT_CONFIG.siteName;
+            merged.siteIntro = loadedData.siteIntro !== undefined ? loadedData.siteIntro : DEFAULT_CONFIG.siteIntro;
+            merged.logoSrc = loadedData.logoSrc || DEFAULT_CONFIG.logoSrc;
+            
+            merged.genres = [];
+            if (Array.isArray(loadedData.genres)) {
+                loadedData.genres.forEach(g => {
+                    let genre = { id: g.id || "genre_" + Math.random(), name: g.name || "未命名ジャンル", apps: [] };
+                    if (Array.isArray(g.apps)) {
+                        g.apps.forEach(a => {
+                            genre.apps.push({
+                                id: a.id || "app_" + Math.random(),
+                                folder: a.folder !== undefined ? a.folder : "", // 旧データ(V4)は空欄として読み込む
+                                name: a.name || "未命名アプリ",
+                                intro: a.intro !== undefined ? a.intro : "",
+                                url: a.url || "#",
+                                icon: a.icon || "",
+                                screenshot: a.screenshot || "",
+                                devices: Object.assign({ smart: false, tablet: false, pc: false }, a.devices || {}),
+                                isPrivate: !!a.isPrivate
+                            });
+                        });
+                    }
+                    merged.genres.push(genre);
+                });
+            }
+            return merged;
+        }
+
+        function importHTML(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                try {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'text/html');
+                    const dataScript = doc.getElementById('namameto-store-data');
+                    
+                    if (!dataScript) {
+                        alert("読み込んだHTMLファイルに、専用のデータブロックが見つかりません。");
+                        return;
+                    }
+                    
+                    const rawB64 = dataScript.textContent.trim();
+                    const jsonString = decodeBase64(rawB64);
+                    const parsedData = JSON.parse(jsonString);
+                    
+                    APP_CONFIG = mergeWithDefault(parsedData);
+                    saveToStorage();
+                    renderEditor();
+                    renderPreview();
+                    alert("データの読み込みに成功しました！");
+                } catch (err) {
+                    alert("ファイルの解析中にエラーが発生しました。");
+                    console.error(err);
+                }
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // --- ジャンル・アプリの操作 ---
+        function updateGenreName(gIdx, val) { APP_CONFIG.genres[gIdx].name = val; saveToStorage(); renderPreview(); }
+        function addGenre() { APP_CONFIG.genres.push({ id: "genre_" + Date.now(), name: "新しいジャンル", apps: [] }); saveToStorage(); renderEditor(); renderPreview(); }
+        function deleteGenre(gIdx) { if(confirm("このジャンルとアプリを削除しますか？")) { APP_CONFIG.genres.splice(gIdx, 1); saveToStorage(); renderEditor(); renderPreview(); } }
+        function moveGenre(gIdx, dir) { if (dir === -1 && gIdx === 0) return; if (dir === 1 && gIdx === APP_CONFIG.genres.length - 1) return; const target = gIdx + dir; const temp = APP_CONFIG.genres[gIdx]; APP_CONFIG.genres[gIdx] = APP_CONFIG.genres[target]; APP_CONFIG.genres[target] = temp; saveToStorage(); renderEditor(); renderPreview(); }
         
-        if (type === 'youtube') return { type: 'youtube', id: extractYouTubeID(val) };
-        else return { type: type, src: val, _tempUrl: tempUrl };
-    });
+        function updateAppField(gIdx, aIdx, field, val) { APP_CONFIG.genres[gIdx].apps[aIdx][field] = val; saveToStorage(); renderPreview(); }
+        function updateAppDevice(gIdx, aIdx, device, checked) { APP_CONFIG.genres[gIdx].apps[aIdx].devices[device] = checked; saveToStorage(); renderPreview(); }
+        function addApp(gIdx) { APP_CONFIG.genres[gIdx].apps.push({ id: "app_" + Date.now(), folder: "", name: "新着アプリ", intro: "", url: "#", icon: "", screenshot: "", devices: { smart: true, tablet: false, pc: false }, isPrivate: false }); saveToStorage(); renderEditor(); renderPreview(); }
+        function deleteApp(gIdx, aIdx) { APP_CONFIG.genres[gIdx].apps.splice(aIdx, 1); saveToStorage(); renderEditor(); renderPreview(); }
+        function moveApp(gIdx, aIdx, dir) { const apps = APP_CONFIG.genres[gIdx].apps; if (dir === -1 && aIdx === 0) return; if (dir === 1 && aIdx === apps.length - 1) return; const target = aIdx + dir; const temp = apps[aIdx]; apps[aIdx] = apps[target]; apps[target] = temp; saveToStorage(); renderEditor(); renderPreview(); }
 
-    APP_CONFIG.moreApps = [];
-    APP_CONFIG.ja.moreAppNames = {}; APP_CONFIG.en.moreAppNames = {};
-    Array.from(document.querySelectorAll('.more-app-item')).map(item => {
-        const id = item.dataset.id;
-        APP_CONFIG.moreApps.push({ id, icon: item.querySelector('.app-icon-input').value, url: item.querySelector('.app-url-input').value });
-        APP_CONFIG.ja.moreAppNames[id] = item.querySelector('.app-ja-name').value;
-        APP_CONFIG.en.moreAppNames[id] = item.querySelector('.app-en-name').value;
-    });
-}
+        // --- 画面描画 ---
+        function renderEditor() {
+            let html = `
+                <div class="file-input-wrapper">
+                    <label class="file-input-label" for="html-importer">
+                        📂 出力済みのHTMLファイルを読み込んで編集する
+                    </label>
+                    <input type="file" id="html-importer" accept=".html" onchange="importHTML(event)">
+                </div>
+                
+                <div class="status-bar">
+                    ※入力内容はブラウザに自動保存されます | <button class="reset-btn" onclick="resetData()">初期状態にリセット</button>
+                </div>
 
-function renderMediaEditor() {
-    const container = document.getElementById('media-list-container');
-    container.innerHTML = '';
-    APP_CONFIG.media.forEach((m, idx) => {
-        const div = document.createElement('div');
-        div.className = 'dynamic-list-item media-item';
-        if (m._tempUrl) div.dataset.tempUrl = m._tempUrl;
-        div.innerHTML = `
-            <div style="font-size:12px; font-weight:bold; margin-bottom:8px;">枠 ${idx + 1}</div>
-            <button class="delete-btn" onclick="removeMediaItem(${idx})">削除</button>
-            <div class="row-inputs">
-                <select class="media-type" style="flex:0.5;">
-                    <option value="image" ${m.type === 'image' ? 'selected' : ''}>画像</option>
-                    <option value="video" ${m.type === 'video' ? 'selected' : ''}>動画</option>
-                    <option value="youtube" ${m.type === 'youtube' ? 'selected' : ''}>YouTube</option>
-                </select>
-                <input type="text" class="media-val" style="flex:1;" placeholder="ファイル名/YouTube URL" value="${m.type === 'youtube' ? (m.id || "") : (m.src || "")}">
-            </div>
-        `;
-        container.appendChild(div);
-    });
-}
-function addMediaItem() { APP_CONFIG.media.push({ type: 'image', src: '' }); renderMediaEditor(); attachGlobalListeners(); updateConfigFromEditor(); renderUI(); }
-function removeMediaItem(idx) { APP_CONFIG.media.splice(idx, 1); renderMediaEditor(); attachGlobalListeners(); updateConfigFromEditor(); renderUI(); }
+                <div class="section-title">ストア全体設定</div>
+                <div class="form-group">
+                    <label>ストア名 / サイトタイトル</label>
+                    <input type="text" value="${escapeHtml(APP_CONFIG.siteName)}" oninput="APP_CONFIG.siteName=this.value; saveToStorage(); renderPreview();">
+                </div>
+                <div class="form-group">
+                    <label>サイト紹介文</label>
+                    <textarea rows="2" oninput="APP_CONFIG.siteIntro=this.value; saveToStorage(); renderPreview();">${escapeHtml(APP_CONFIG.siteIntro)}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>サイトロゴ画像パス</label>
+                    <input type="text" value="${escapeHtml(APP_CONFIG.logoSrc)}" oninput="APP_CONFIG.logoSrc=this.value; saveToStorage(); renderPreview();">
+                </div>
+                
+                <div class="section-title">アプリ・ジャンル編集</div>
+            `;
 
-function renderMoreAppsEditor() {
-    const container = document.getElementById('more-apps-list-container');
-    container.innerHTML = '';
-    APP_CONFIG.moreApps.forEach((app, idx) => {
-        const jaName = (APP_CONFIG.ja.moreAppNames && APP_CONFIG.ja.moreAppNames[app.id]) || "";
-        const enName = (APP_CONFIG.en.moreAppNames && APP_CONFIG.en.moreAppNames[app.id]) || "";
-        const div = document.createElement('div');
-        div.className = 'dynamic-list-item more-app-item';
-        div.dataset.id = app.id;
-        div.innerHTML = `
-            <div style="font-size:12px; font-weight:bold; margin-bottom:8px;">アプリ ${idx + 1}</div>
-            <button class="delete-btn" onclick="removeMoreAppItem('${app.id}')">削除</button>
-            <div class="row-inputs"><input type="text" class="app-ja-name" placeholder="アプリ名 (JA)" value="${jaName}"><input type="text" class="app-en-name" placeholder="アプリ名 (EN)" value="${enName}"></div>
-            <div class="row-inputs"><input type="text" class="app-icon-input" placeholder="アイコン画像 URL" value="${app.icon}"><input type="text" class="app-url-input" placeholder="リンク先 URL" value="${app.url}"></div>
-        `;
-        container.appendChild(div);
-    });
-}
-function addMoreAppItem() {
-    const newId = 'app_' + Date.now();
-    APP_CONFIG.moreApps.push({ id: newId, icon: '', url: '' });
-    if (!APP_CONFIG.ja.moreAppNames) APP_CONFIG.ja.moreAppNames = {};
-    if (!APP_CONFIG.en.moreAppNames) APP_CONFIG.en.moreAppNames = {};
-    renderMoreAppsEditor(); attachGlobalListeners(); updateConfigFromEditor(); renderUI();
-}
-function removeMoreAppItem(id) {
-    APP_CONFIG.moreApps = APP_CONFIG.moreApps.filter(app => app.id !== id);
-    delete APP_CONFIG.ja.moreAppNames[id]; delete APP_CONFIG.en.moreAppNames[id];
-    renderMoreAppsEditor(); attachGlobalListeners(); updateConfigFromEditor(); renderUI();
-}
+            APP_CONFIG.genres.forEach((genre, gIdx) => {
+                html += `
+                    <div class="genre-block">
+                        <div class="genre-header">
+                            <input type="text" value="${escapeHtml(genre.name)}" style="font-weight:bold; flex:1;" oninput="updateGenreName(${gIdx}, this.value)" placeholder="ジャンル名を入力">
+                            <div class="genre-ctrls">
+                                <button class="btn btn-secondary btn-sm" onclick="moveGenre(${gIdx}, -1)">▲</button>
+                                <button class="btn btn-secondary btn-sm" onclick="moveGenre(${gIdx}, 1)">▼</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteGenre(${gIdx})">削除</button>
+                            </div>
+                        </div>
+                        <div class="app-edit-list">
+                `;
 
-const resizer = document.getElementById('resizer'); const editorPanel = document.getElementById('editor-panel'); let isResizing = false;
-resizer.addEventListener('mousedown', (e) => { isResizing = true; document.body.style.cursor = 'col-resize'; e.preventDefault();});
-document.addEventListener('mousemove', (e) => { if (!isResizing) return; let newWidth = e.clientX; if (newWidth < 300) newWidth = 300; if (newWidth > window.innerWidth - 300) newWidth = window.innerWidth - 300; editorPanel.style.width = newWidth + 'px'; });
-document.addEventListener('mouseup', () => { isResizing = false; document.body.style.cursor = 'default'; });
+                genre.apps.forEach((app, aIdx) => {
+                    html += `
+                        <div class="app-edit-block">
+                            <div class="app-edit-header">
+                                <span>アプリ #${aIdx + 1}</span>
+                                <div class="app-ctrls">
+                                    <button class="btn btn-secondary btn-sm" onclick="moveApp(${gIdx}, ${aIdx}, -1)">▲</button>
+                                    <button class="btn btn-secondary btn-sm" onclick="moveApp(${gIdx}, ${aIdx}, 1)">▼</button>
+                                    <button class="btn btn-danger btn-sm" onclick="deleteApp(${gIdx}, ${aIdx})">× 削除</button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>📁 配置フォルダ名 (例: apps/app1)</label>
+                                <input type="text" value="${escapeHtml(app.folder || '')}" oninput="updateAppField(${gIdx}, ${aIdx}, 'folder', this.value)" placeholder="空欄の場合は直下を参照">
+                                <span class="hint-text">※ここに入力すると、以下の3つのファイル名は自動でこのフォルダ内に繋がります</span>
+                            </div>
+                            <div class="form-group">
+                                <label>アプリ名</label>
+                                <input type="text" value="${escapeHtml(app.name)}" oninput="updateAppField(${gIdx}, ${aIdx}, 'name', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label>アプリ紹介文 (1〜2行程度)</label>
+                                <textarea rows="2" oninput="updateAppField(${gIdx}, ${aIdx}, 'intro', this.value)" placeholder="紹介文を入力...">${escapeHtml(app.intro)}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>🔗 リンク先URL (ファイル名のみ)</label>
+                                <input type="text" value="${escapeHtml(app.url)}" oninput="updateAppField(${gIdx}, ${aIdx}, 'url', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label>🖼 アイコン画像 (ファイル名のみ)</label>
+                                <input type="text" value="${escapeHtml(app.icon)}" oninput="updateAppField(${gIdx}, ${aIdx}, 'icon', this.value)">
+                            </div>
+                            <div class="form-group">
+                                <label>📱 スクリーンショット画像 (ファイル名のみ)</label>
+                                <input type="text" value="${escapeHtml(app.screenshot)}" oninput="updateAppField(${gIdx}, ${aIdx}, 'screenshot', this.value)">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>推奨動作機種</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label"><input type="checkbox" ${app.devices.smart ? 'checked' : ''} onchange="updateAppDevice(${gIdx}, ${aIdx}, 'smart', this.checked)">スマ</label>
+                                    <label class="checkbox-label"><input type="checkbox" ${app.devices.tablet ? 'checked' : ''} onchange="updateAppDevice(${gIdx}, ${aIdx}, 'tablet', this.checked)">タブ</label>
+                                    <label class="checkbox-label"><input type="checkbox" ${app.devices.pc ? 'checked' : ''} onchange="updateAppDevice(${gIdx}, ${aIdx}, 'pc', this.checked)">ＰＣ</label>
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-top:10px;">
+                                <label class="checkbox-label" style="color:#d93025; font-weight:bold;">
+                                    <input type="checkbox" ${app.isPrivate ? 'checked' : ''} onchange="updateAppField(${gIdx}, ${aIdx}, 'isPrivate', this.checked)"> [非公開] にしてグレーアウト
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                });
 
-// --- 超強力な波括弧カウント式JSパーサー ---
-function extractJSObject(content, varName) {
-    let startIdx = content.indexOf(varName + " = ");
-    if (startIdx === -1) startIdx = content.indexOf(varName + "=");
-    if (startIdx === -1) return null;
-    
-    const objStartIdx = content.indexOf('{', startIdx);
-    if (objStartIdx === -1) return null;
+                html += `
+                            <button class="btn btn-secondary btn-sm" style="width:100%;" onclick="addApp(${gIdx})">+ アプリを追加</button>
+                        </div>
+                    </div>
+                `;
+            });
 
-    let braceCount = 0; let objEndIdx = -1; let inString = false; let stringChar = ''; let isEscaped = false;
+            html += `
+                <button class="btn btn-secondary" style="margin-bottom:20px;" onclick="addGenre()">+ 新しいジャンルを追加</button>
+                <button class="btn" onclick="exportHTML()" style="background-color:#01875f; font-size:15px; padding:12px; margin-bottom:40px;">ストアトップHTMLをエクスポート</button>
+            `;
 
-    for (let i = objStartIdx; i < content.length; i++) {
-        const char = content[i];
-        if (inString) {
-            if (isEscaped) isEscaped = false;
-            else if (char === '\\') isEscaped = true;
-            else if (char === stringChar) inString = false;
-        } else {
-            if (char === '"' || char === "'" || char === '`') { inString = true; stringChar = char; }
-            else if (char === '{') braceCount++;
-            else if (char === '}') { braceCount--; if (braceCount === 0) { objEndIdx = i; break; } }
+            document.getElementById('editor-panel').innerHTML = html;
         }
-    }
-    return objEndIdx !== -1 ? content.substring(objStartIdx, objEndIdx + 1) : null;
-}
 
-function loadHTMLFile(file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-        const content = e.target.result;
-        const objStr = extractJSObject(content, 'APP_CONFIG');
-        
-        if (objStr) {
-            try {
-                // JSON.parseではなく、生のJSオブジェクトとして評価（柔軟な読み込み）
-                const parsedData = new Function("return " + objStr)();
-                APP_CONFIG = Object.assign({}, APP_CONFIG, parsedData);
-                if(!APP_CONFIG.moreApps) APP_CONFIG.moreApps = [];
-                initEditor();
-                renderUI();
-                alert('ファイルを読み込みました！');
-            } catch(err) { alert('データの解析に失敗しました。'); }
-        } else { alert('対応するデータが見つかりません。'); }
-    };
-    reader.readAsText(file);
-}
+        function renderPreview() {
+            let genresHtml = '';
+            
+            APP_CONFIG.genres.forEach(genre => {
+                let appsHtml = '';
+                genre.apps.forEach(app => {
+                    const privateBadge = app.isPrivate ? `<div class="private-badge">非公開</div>` : '';
+                    const privateDimClass = app.isPrivate ? 'private-dimmed' : ''; 
+                    
+                    const smartClass = app.devices.smart ? 'active' : '';
+                    const tabletClass = app.devices.tablet ? 'active' : '';
+                    const pcClass = app.devices.pc ? 'active' : '';
+                    const descHtml = app.intro ? `<p class="app-desc">${escapeHtml(app.intro)}</p>` : '';
+                    
+                    // パスの結合
+                    const finalUrl = resolvePath(app.folder, app.url) || '#';
+                    const finalIcon = resolvePath(app.folder, app.icon);
+                    const finalScreenshot = resolvePath(app.folder, app.screenshot);
+                    
+                    appsHtml += `
+                        <div class="app-card ${privateDimClass}">
+                            <div class="screenshot-wrapper">
+                                ${privateBadge}
+                                <img src="${escapeHtml(finalScreenshot)}" class="screenshot-img" onerror="this.style.visibility='hidden';">
+                            </div>
+                            <div class="app-card-details">
+                                <div class="app-meta">
+                                    <img src="${escapeHtml(finalIcon)}" class="app-icon" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'32\\' height=\\'32\\' viewBox=\\'0 0 32 32\\'><rect width=\\'32\\' height=\\'32\\' fill=\\'%23f1f3f4\\'/><circle cx=\\'16\\' cy=\\'16\\' r=\\'8\\' fill=\\'%23bdc1c6\\'/></svg>';">
+                                    <h3 class="app-name">${escapeHtml(app.name || '未命名アプリ')}</h3>
+                                </div>
+                                ${descHtml}
+                                <div class="device-tabs">
+                                    <span class="device-tab ${smartClass}">スマ</span>
+                                    <span class="device-tab ${tabletClass}">タブ</span>
+                                    <span class="device-tab ${pcClass}">ＰＣ</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
 
-const dropZone = document.getElementById('file-loader-area');
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragleave', e => { e.preventDefault(); dropZone.classList.remove('dragover'); });
-dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); if(e.dataTransfer.files[0]) loadHTMLFile(e.dataTransfer.files[0]); });
-document.getElementById('html-file-input').addEventListener('change', e => { if(e.target.files[0]) loadHTMLFile(e.target.files[0]); });
+                genresHtml += `
+                    <section class="genre-section">
+                        <h2 class="genre-title">${escapeHtml(genre.name || '未命名ジャンル')}</h2>
+                        <div class="apps-grid">
+                            ${appsHtml || '<div style="grid-column: 1/-1; color:#9aa0a6; font-size:13px; padding:8px 0;">アプリが登録されていません</div>'}
+                        </div>
+                    </section>
+                `;
+            });
 
-async function translateEmptyFields() {
-    const fields = [ 
-        { ja: 'ed-ja-title', en: 'ed-en-title' }, 
-        { ja: 'ed-ja-developer', en: 'ed-en-developer' }, 
-        { ja: 'ed-ja-btn', en: 'ed-en-btn' }, 
-        { ja: 'ed-ja-sc', en: 'ed-en-sc' }, 
-        { ja: 'ed-ja-whatsnew-title', en: 'ed-en-whatsnew-title' },
-        { ja: 'ed-ja-whatsnew-date', en: 'ed-en-whatsnew-date' },
-        { ja: 'ed-ja-whatsnew-desc', en: 'ed-en-whatsnew-desc' },
-        { ja: 'ed-ja-more', en: 'ed-en-more' }, 
-        { ja: 'ed-ja-desc', en: 'ed-en-desc' } 
-    ];
-    const btn = document.getElementById('translate-btn'); btn.innerText = "⏳ 翻訳中..."; btn.disabled = true;
+            const introHtml = APP_CONFIG.siteIntro ? `<div class="intro-section"><p class="intro-text">${escapeHtml(APP_CONFIG.siteIntro)}</p></div>` : '';
 
-    for (let f of fields) {
-        const jaText = document.getElementById(f.ja).value; const enInput = document.getElementById(f.en);
-        if (jaText && !enInput.value) {
-            try {
-                const res = await fetch(GAS_TRANSLATE_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ text: jaText, source: 'ja', target: 'en' }) });
-                const data = await res.json(); enInput.value = data.translated;
-            } catch(e) {}
+            document.getElementById('preview-panel').innerHTML = `
+                <div class="store-top-view">
+                    <header class="navbar">
+                        <div class="navbar-container">
+                            <div class="navbar-left">
+                                <img src="${escapeHtml(APP_CONFIG.logoSrc)}" class="brand-logo" onerror="this.style.visibility='hidden';">
+                                <span class="brand-name">${escapeHtml(APP_CONFIG.siteName)}</span>
+                            </div>
+                            <nav>
+                                <ul class="nav-menu">
+                                    <li class="nav-item active"><a class="nav-link">アプリ</a></li>
+                                    <li class="nav-item"><a class="nav-link">寄付について</a></li>
+                                    <li class="nav-item"><a class="nav-link">作者</a></li>
+                                    <li class="nav-item"><a class="nav-link">お問い合わせ</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </header>
+                    <main class="main-content">
+                        ${introHtml}
+                        ${genresHtml}
+                    </main>
+                </div>
+            `;
         }
-    }
-    const moreAppItems = document.querySelectorAll('.more-app-item');
-    for (let item of moreAppItems) {
-        const jaInput = item.querySelector('.app-ja-name'); const enInput = item.querySelector('.app-en-name');
-        if (jaInput.value && !enInput.value) {
-            try {
-                const res = await fetch(GAS_TRANSLATE_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify({ text: jaInput.value, source: 'ja', target: 'en' }) });
-                const data = await res.json(); enInput.value = data.translated;
-            } catch(e) {}
+
+        // --- 安全なエクスポート処理 ---
+        function exportHTML() {
+            const jsonString = JSON.stringify(APP_CONFIG);
+            const b64Data = encodeBase64(jsonString);
+            
+            let finalHTML = EXPORT_TEMPLATE.replace('DATA_B64_PLACEHOLDER', b64Data);
+            finalHTML = finalHTML.replace(/GLOBAL_SITE_NAME/g, escapeHtml(APP_CONFIG.siteName));
+            
+            const blob = new Blob([finalHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'index.html';
+            a.click();
+            URL.revokeObjectURL(url);
         }
-    }
-    btn.innerText = "🌐 空欄を自動翻訳 (JA→EN)"; btn.disabled = false; updateConfigFromEditor(); renderUI();
-}
 
-const getBlankImgSvg = (num) => `data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='600'%3E%3Crect width='100%25' height='100%25' fill='%23e8eaed'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='24' fill='%239aa0a6' text-anchor='middle' dominant-baseline='middle'%3ENo Image ${num}%3C/text%3E%3C/svg%3E`;
-const BLANK_ICON_SVG = "data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23e8eaed'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='24' fill='%239aa0a6' text-anchor='middle' dominant-baseline='middle'%3EIcon%3C/text%3E%3C/svg%3E";
+        const resizer = document.getElementById('resizer');
+        const editorPanel = document.getElementById('editor-panel');
+        let isResizing = false;
 
-function renderUI() {
-    const textData = APP_CONFIG[currentLang];
-    document.getElementById('ui-title').innerText = textData.title || "";
-    document.getElementById('ui-developer').innerText = textData.developer || "";
-    const mainIcon = document.getElementById('ui-app-icon');
-    mainIcon.src = APP_CONFIG.appIcon; mainIcon.onerror = () => { mainIcon.onerror = null; mainIcon.src = BLANK_ICON_SVG; };
-    
-    const actionBtn = document.getElementById('ui-action-btn');
-    actionBtn.innerText = textData.buttonText || ""; actionBtn.href = APP_CONFIG.appUrl || "#";
-    
-    document.getElementById('ui-screenshots-title').innerText = textData.screenshotsTitle || "";
-    document.getElementById('ui-description').innerHTML = textData.description || "";
-    document.getElementById('ui-more-apps-title').innerText = textData.moreAppsTitle || "";
-    
-    const whatsnewSec = document.getElementById('ui-whatsnew-section');
-    if (textData.whatsnewDesc && textData.whatsnewDesc.trim() !== "") {
-        whatsnewSec.style.display = 'block';
-        document.getElementById('ui-whatsnew-title').innerText = textData.whatsnewTitle || "";
-        document.getElementById('ui-whatsnew-date').innerText = textData.whatsnewDate || "";
-        document.getElementById('ui-whatsnew-desc').innerText = textData.whatsnewDesc || "";
-    } else {
-        whatsnewSec.style.display = 'none';
-    }
-
-    const gallery = document.getElementById('ui-gallery');
-    gallery.innerHTML = "";
-    APP_CONFIG.media.forEach((item, index) => {
-        const wrapper = document.createElement('div'); wrapper.className = 'gallery-item-wrapper'; wrapper.onclick = () => openLightbox(index);
-        if (item.type === 'youtube') {
-            const img = document.createElement('img'); img.className = 'gallery-item img-landscape'; img.src = `https://img.youtube.com/vi/${item.id}/hqdefault.jpg`;
-            wrapper.appendChild(img); const playIcon = document.createElement('div'); playIcon.className = 'play-icon'; playIcon.innerHTML = '▶'; wrapper.appendChild(playIcon);
-        } else if (item.type === 'video') {
-            const video = document.createElement('video'); video.className = 'gallery-item img-portrait'; video.src = item._tempUrl || item.src; video.preload = 'metadata';
-            wrapper.appendChild(video); const playIcon = document.createElement('div'); playIcon.className = 'play-icon'; playIcon.innerHTML = '▶'; wrapper.appendChild(playIcon);
-        } else {
-            const img = document.createElement('img'); img.className = 'gallery-item img-portrait'; img.src = item._tempUrl || item.src;
-            img.onerror = () => { img.onerror = null; img.src = getBlankImgSvg(index + 1); }; wrapper.appendChild(img);
-        }
-        gallery.appendChild(wrapper);
-    });
-
-    const moreAppsGrid = document.getElementById('ui-more-apps-grid'); moreAppsGrid.innerHTML = "";
-    if(APP_CONFIG.moreApps) {
-        APP_CONFIG.moreApps.forEach(app => {
-            const a = document.createElement('a'); a.className = 'more-app-card'; a.href = app.url;
-            const img = document.createElement('img'); img.className = 'more-app-icon'; img.src = app.icon; img.onerror = () => { img.onerror = null; img.src = BLANK_ICON_SVG; };
-            const span = document.createElement('span'); span.className = 'more-app-name'; span.innerText = textData.moreAppNames ? (textData.moreAppNames[app.id] || "") : "";
-            a.appendChild(img); a.appendChild(span); moreAppsGrid.appendChild(a);
+        resizer.addEventListener('mousedown', (e) => { isResizing = true; document.body.style.cursor = 'col-resize'; });
+        document.addEventListener('mousemove', (e) => {
+            if (!isResizing) return;
+            if (e.clientX > 320 && e.clientX < 800) { editorPanel.style.width = e.clientX + 'px'; }
         });
-    }
-}
+        document.addEventListener('mouseup', () => { isResizing = false; document.body.style.cursor = 'default'; });
 
-function toggleLanguage() { currentLang = currentLang === 'ja' ? 'en' : 'ja'; renderUI(); }
-
-let currentMediaIndex = 0;
-const lightbox = document.getElementById('lightbox'); const lightboxImg = document.getElementById('lightbox-img'); const lightboxVideo = document.getElementById('lightbox-video');
-
-function openLightbox(index) { currentMediaIndex = index; updateLightboxMedia(); lightbox.classList.add('active'); }
-function closeLightbox() { lightbox.classList.remove('active'); lightboxVideo.innerHTML = ''; }
-function updateLightboxMedia() {
-    const item = APP_CONFIG.media[currentMediaIndex];
-    lightboxImg.style.opacity = '0'; lightboxVideo.style.opacity = '0'; lightboxVideo.innerHTML = ''; 
-    setTimeout(() => {
-        if (item.type === 'youtube') {
-            lightboxImg.style.display = 'none'; lightboxVideo.style.display = 'block';
-            lightboxVideo.innerHTML = `<iframe src="https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-            lightboxVideo.style.opacity = '1';
-        } else if (item.type === 'video') {
-            lightboxImg.style.display = 'none'; lightboxVideo.style.display = 'block';
-            lightboxVideo.innerHTML = `<video src="${item._tempUrl || item.src}" controls autoplay style="width:100%; height:100%; max-height:80vh; object-fit:contain; outline:none; background:transparent;"></video>`;
-            lightboxVideo.style.opacity = '1';
-        } else {
-            lightboxVideo.style.display = 'none'; lightboxImg.style.display = 'block';
-            const tempImg = new Image(); tempImg.src = item._tempUrl || item.src;
-            tempImg.onload = () => { lightboxImg.src = tempImg.src; lightboxImg.style.opacity = '1'; };
-            tempImg.onerror = () => { lightboxImg.src = getBlankImgSvg(currentMediaIndex + 1); lightboxImg.style.opacity = '1'; };
-        }
-    }, 150);
-}
-function prevMedia(e) { if(e) e.stopPropagation(); currentMediaIndex = (currentMediaIndex > 0) ? currentMediaIndex - 1 : APP_CONFIG.media.length - 1; updateLightboxMedia(); }
-function nextMedia(e) { if(e) e.stopPropagation(); currentMediaIndex = (currentMediaIndex < APP_CONFIG.media.length - 1) ? currentMediaIndex + 1 : 0; updateLightboxMedia(); }
-
-lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
-
-lightbox.addEventListener('dragover', e => { 
-    e.preventDefault(); e.stopPropagation(); 
-    if(APP_CONFIG.media[currentMediaIndex].type !== 'youtube') lightbox.style.boxShadow = 'inset 0 0 0 4px #01875f'; 
-});
-lightbox.addEventListener('dragleave', e => { e.preventDefault(); e.stopPropagation(); lightbox.style.boxShadow = 'none'; });
-lightbox.addEventListener('drop', e => {
-    e.preventDefault(); e.stopPropagation(); lightbox.style.boxShadow = 'none';
-    if(APP_CONFIG.media[currentMediaIndex].type === 'youtube') return;
-    
-    const file = e.dataTransfer.files[0];
-    if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
-        const tempUrl = URL.createObjectURL(file);
-        APP_CONFIG.media[currentMediaIndex].type = file.type.startsWith('video/') ? 'video' : 'image';
-        APP_CONFIG.media[currentMediaIndex].src = file.name;
-        APP_CONFIG.media[currentMediaIndex]._tempUrl = tempUrl;
-        
-        renderMediaEditor(); attachGlobalListeners(); updateLightboxMedia(); renderUI();
-    }
-});
-
-function exportHTML() {
-    const template = document.getElementById('export-template').value;
-    const exportData = JSON.parse(JSON.stringify(APP_CONFIG));
-    if (exportData.media) exportData.media.forEach(m => delete m._tempUrl);
-    const configStr = JSON.stringify(exportData, null, 4);
-    const finalHTML = template.replace('/*%%%APP_CONFIG_JSON%%%*/', configStr);
-    const blob = new Blob([finalHTML], { type: 'text/html' });
-    const url = URL.createObjectURL(blob); const a = document.createElement('a');
-    a.href = url; a.download = 'NamaMetoStore_Updated.html'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-}
-
-window.onload = () => { initEditor(); renderUI(); };
-</script>
+        // ロード時にストレージからデータ復旧
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
 </body>
 </html>
