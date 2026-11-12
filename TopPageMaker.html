@@ -67,6 +67,11 @@
     .store-top-view .main-content { padding: 24px 20px; box-sizing: border-box; }
     .store-top-view .intro-section { margin-bottom: 24px; background: #fff; padding: 14px 16px; border-radius: 8px; border: 1px solid #e8eaed; }
     .store-top-view .intro-text { margin: 0; font-size: 13px; color: #5f6368; line-height: 1.5; white-space: pre-wrap; }
+    .store-top-view .page-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e8eaed; }
+    .store-top-view .page-body { font-size: 14px; line-height: 1.7; color: #3c4043; white-space: pre-wrap; }
+    .store-top-view .page-body a { color: #01875f; font-weight: bold; text-decoration: none; }
+    .store-top-view .page-btn { display: block; margin-top: 20px; padding: 12px 0; background-color: #01875f; color: #ffffff; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: bold; }
+    .store-top-view .nav-item { cursor: pointer; }
     
     .store-top-view .genre-section { margin-bottom: 32px; }
     .store-top-view .genre-title { font-size: 16px; font-weight: bold; color: #202124; margin: 0 0 16px 0; padding-bottom: 6px; border-bottom: 1px solid #e8eaed; }
@@ -132,6 +137,10 @@
     .main-content { max-width: 960px; margin: 0 auto; padding: 24px 16px; box-sizing: border-box; }
     .intro-section { margin-bottom: 24px; background: #fff; padding: 14px 16px; border-radius: 8px; border: 1px solid #e8eaed; }
     .intro-text { margin: 0; font-size: 13px; color: #5f6368; line-height: 1.5; white-space: pre-wrap; }
+    .page-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e8eaed; }
+    .page-body { font-size: 14px; line-height: 1.7; color: #3c4043; white-space: pre-wrap; }
+    .page-body a { color: #01875f; font-weight: bold; text-decoration: none; }
+    .page-btn { display: block; margin-top: 20px; padding: 12px 0; background-color: #01875f; color: #ffffff; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: bold; }
     
     .genre-section { margin-bottom: 32px; }
     .genre-title { font-size: 16px; font-weight: bold; color: #202124; margin: 0 0 16px 0; padding-bottom: 6px; border-bottom: 1px solid #e8eaed; }
@@ -249,6 +258,15 @@
 
                 const introHtml = config.siteIntro ? \`<div class="intro-section"><p class="intro-text">\${escapeHtml(config.siteIntro)}</p></div>\` : '';
 
+                function pageHtml(key) {
+                    const p = (config.pages || {})[key] || {};
+                    let h = '<section class="page-section"><div class="page-body">' + (p.body || '') + '</div>';
+                    const url = key === 'donation' ? (p.linkUrl || '') : (key === 'contact' ? (p.formUrl || '') : '');
+                    const label = key === 'donation' ? (p.linkLabel || '') : (key === 'contact' ? (p.formLabel || '') : '');
+                    if (url) h += '<a class="page-btn" href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' + escapeHtml(label || '開く') + '</a>';
+                    return h + '</section>';
+                }
+
                 document.getElementById('store-root').innerHTML = \`
                     <header class="navbar">
                         <div class="navbar-container">
@@ -258,19 +276,36 @@
                             </div>
                             <nav>
                                 <ul class="nav-menu">
-                                    <li class="nav-item active"><a href="#" class="nav-link">アプリ</a></li>
-                                    <li class="nav-item"><a href="#" class="nav-link">寄付について</a></li>
-                                    <li class="nav-item"><a href="#" class="nav-link">作者</a></li>
-                                    <li class="nav-item"><a href="#" class="nav-link">お問い合わせ</a></li>
+                                    <li class="nav-item active" data-tab="apps"><a href="#" class="nav-link">アプリ</a></li>
+                                    <li class="nav-item" data-tab="donation"><a href="#" class="nav-link">寄付について</a></li>
+                                    <li class="nav-item" data-tab="author"><a href="#" class="nav-link">作者</a></li>
+                                    <li class="nav-item" data-tab="contact"><a href="#" class="nav-link">お問い合わせ</a></li>
                                 </ul>
                             </nav>
                         </div>
                     </header>
                     <main class="main-content">
-                        \${introHtml}
-                        \${genresHtml || '<div style="color:#5f6368; text-align:center; padding:40px 0;">ジャンルが設定されていません。</div>'}
+                        <div id="view-apps">
+                            \${introHtml}
+                            \${genresHtml || '<div style="color:#5f6368; text-align:center; padding:40px 0;">ジャンルが設定されていません。</div>'}
+                        </div>
+                        <div id="view-donation" style="display:none">\${pageHtml('donation')}</div>
+                        <div id="view-author" style="display:none">\${pageHtml('author')}</div>
+                        <div id="view-contact" style="display:none">\${pageHtml('contact')}</div>
                     </main>
                 \`;
+
+                document.querySelectorAll('.nav-item[data-tab]').forEach(function(item) {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const tab = item.getAttribute('data-tab');
+                        document.querySelectorAll('.nav-item[data-tab]').forEach(function(n) { n.classList.toggle('active', n === item); });
+                        ['apps', 'donation', 'author', 'contact'].forEach(function(t) {
+                            const v = document.getElementById('view-' + t);
+                            if (v) v.style.display = (t === tab) ? '' : 'none';
+                        });
+                    });
+                });
             } catch (err) {
                 console.error("データのパースに失敗しました", err);
             }
@@ -285,10 +320,27 @@
         const STORAGE_KEY_V5 = 'namaStudioStoreData_v5';
         const STORAGE_KEY_V4 = 'namaStudioStoreData_v4'; // 後方互換用
 
+        const DEFAULT_PAGES = {
+            donation: {
+                body: "■ ほしいものリスト\n（ほしいものリストを置いている理由や、見てほしい人への一言を書く欄）\n※下のボタンからリストを開けます（ボタンは「リンクURL」欄を設定すると表示されます）\n\n■ 寄付・ご支援についての考え\n（支援は必須ではないこと／どんな気持ちで置いているか など、自分の考えを書く欄）\n\n■ いただいたものの使い道\n（例：楽器のメンテナンス、録音機材、開発環境の維持など）\n\n■ お礼\n（支援してくれた人へのお礼を書く欄）",
+                linkUrl: "",
+                linkLabel: "🎁 ほしいものリストを開く"
+            },
+            author: {
+                body: "■ プロフィール\n（名前や、ひとこと自己紹介を書く欄）\n\n■ 作っているもの\n（このサイトで公開しているアプリ群について書く欄）\n\n■ 音楽活動\n（所属している団体、担当楽器、演奏歴などを書く欄）\n\n■ 開発について\n（アプリ開発の進め方や、使っている道具について書く欄）\n\n■ このサイトについて\n（更新の方針や、公開範囲について書く欄）"
+            },
+            contact: {
+                body: "■ ご連絡の前に（よく読んでください）\n・返信が極度に苦手なため、ほとんどの場合お返事はできません\n・内容にはできる範囲で目を通しますが、対応や修正をお約束するものではありません\n・不具合の報告は、機種名と「どの画面で・どうなったか」を書いていただけると助かります\n・個人情報や金銭に関わる内容は送らないでください\n\n■ それでも伝えたいことがある場合\n下のボタンからフォームを開いて送信してください。\n（ボタンは「フォームURL」欄を設定すると表示されます）",
+                formUrl: "",
+                formLabel: "📮 お問い合わせフォームを開く"
+            }
+        };
+
         const DEFAULT_CONFIG = {
             siteName: "Nama Studio ─ナマスタ─",
             siteIntro: "自作アプリの公開ポータルサイトです。音楽系アプリや便利ツールなどを公開しています。",
             logoSrc: "NamaStudioLogoHalf.png",
+            pages: DEFAULT_PAGES,
             genres: [
                 {
                     id: "genre_1",
@@ -385,6 +437,18 @@
                     merged.genres.push(genre);
                 });
             }
+            merged.pages = {};
+            ['donation', 'author', 'contact'].forEach(function(k) {
+                const dflt = DEFAULT_CONFIG.pages[k] || {};
+                const ld = (loadedData.pages || {})[k] || {};
+                merged.pages[k] = {
+                    body: ld.body !== undefined ? ld.body : (dflt.body || ''),
+                    linkUrl: ld.linkUrl || '',
+                    linkLabel: ld.linkLabel !== undefined ? ld.linkLabel : (dflt.linkLabel || ''),
+                    formUrl: ld.formUrl || '',
+                    formLabel: ld.formLabel !== undefined ? ld.formLabel : (dflt.formLabel || '')
+                };
+            });
             return merged;
         }
 
@@ -434,6 +498,46 @@
         function deleteApp(gIdx, aIdx) { APP_CONFIG.genres[gIdx].apps.splice(aIdx, 1); saveToStorage(); renderEditor(); renderPreview(); }
         function moveApp(gIdx, aIdx, dir) { const apps = APP_CONFIG.genres[gIdx].apps; if (dir === -1 && aIdx === 0) return; if (dir === 1 && aIdx === apps.length - 1) return; const target = aIdx + dir; const temp = apps[aIdx]; apps[aIdx] = apps[target]; apps[target] = temp; saveToStorage(); renderEditor(); renderPreview(); }
 
+        let currentTab = 'apps';
+
+        function switchTab(tab) { currentTab = tab; renderEditor(); renderPreview(); }
+        function updatePageField(page, field, val) { if (APP_CONFIG.pages && APP_CONFIG.pages[page]) { APP_CONFIG.pages[page][field] = val; saveToStorage(); renderPreview(); } }
+
+        function pageHtmlPreview(key) {
+            const p = (APP_CONFIG.pages || {})[key] || {};
+            let h = '<section class="page-section"><div class="page-body">' + (p.body || '') + '</div>';
+            const url = key === 'donation' ? (p.linkUrl || '') : (key === 'contact' ? (p.formUrl || '') : '');
+            const label = key === 'donation' ? (p.linkLabel || '') : (key === 'contact' ? (p.formLabel || '') : '');
+            if (url) h += '<a class="page-btn" href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' + escapeHtml(label || '開く') + '</a>';
+            return h + '</section>';
+        }
+
+        function tabBarHtml() {
+            const tabs = [['apps', 'アプリ'], ['donation', '寄付について'], ['author', '作者'], ['contact', 'お問い合わせ']];
+            let h = '<div style="display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap;">';
+            tabs.forEach(function(t) {
+                const on = currentTab === t[0];
+                h += '<button class="btn ' + (on ? '' : 'btn-secondary') + ' btn-sm" style="flex:1;" onclick="switchTab(\'' + t[0] + '\')">' + t[1] + '</button>';
+            });
+            return h + '</div>';
+        }
+
+        function pageEditorHtml(tab) {
+            const p = APP_CONFIG.pages[tab];
+            const titles = { donation: '寄付について', author: '作者', contact: 'お問い合わせ' };
+            let h = '<div class="section-title">' + titles[tab] + ' ページ編集</div>';
+            h += '<div class="form-group"><label>本文（改行・HTMLタグ可。見出しは「■ 」で始めるのがおすすめ）</label><textarea rows="16" oninput="updatePageField(\'' + tab + '\', \'body\', this.value)">' + escapeHtml(p.body || '') + '</textarea></div>';
+            if (tab === 'donation') {
+                h += '<div class="form-group"><label>ほしいものリストのURL（ボタン用・空欄ならボタンなし）</label><input type="text" value="' + escapeHtml(p.linkUrl || '') + '" oninput="updatePageField(\'donation\', \'linkUrl\', this.value)"></div>';
+                h += '<div class="form-group"><label>リンクボタンの文言</label><input type="text" value="' + escapeHtml(p.linkLabel || '') + '" oninput="updatePageField(\'donation\', \'linkLabel\', this.value)"></div>';
+            }
+            if (tab === 'contact') {
+                h += '<div class="form-group"><label>フォームのURL（Googleフォーム等・空欄ならボタンなし）</label><input type="text" value="' + escapeHtml(p.formUrl || '') + '" oninput="updatePageField(\'contact\', \'formUrl\', this.value)"></div>';
+                h += '<div class="form-group"><label>フォームボタンの文言</label><input type="text" value="' + escapeHtml(p.formLabel || '') + '" oninput="updatePageField(\'contact\', \'formLabel\', this.value)"></div>';
+            }
+            return h;
+        }
+
         // --- 画面描画 ---
         function renderEditor() {
             let html = `
@@ -448,6 +552,7 @@
                     ※入力内容はブラウザに自動保存されます | <button class="reset-btn" onclick="resetData()">初期状態にリセット</button>
                 </div>
 
+                ${tabBarHtml()}
                 <div class="section-title">ストア全体設定</div>
                 <div class="form-group">
                     <label>ストア名 / サイトタイトル</label>
@@ -462,6 +567,16 @@
                     <input type="text" value="${escapeHtml(APP_CONFIG.logoSrc)}" oninput="APP_CONFIG.logoSrc=this.value; saveToStorage(); renderPreview();">
                 </div>
                 
+            ` + '';
+
+            if (currentTab !== 'apps') {
+                html += pageEditorHtml(currentTab);
+                html += '<button class="btn" onclick="exportHTML()" style="background-color:#01875f; font-size:15px; padding:12px; margin-bottom:40px;">ストアトップHTMLをエクスポート</button>';
+                document.getElementById('editor-panel').innerHTML = html;
+                return;
+            }
+
+            html += `
                 <div class="section-title">アプリ・ジャンル編集</div>
             `;
 
@@ -612,17 +727,22 @@
                             </div>
                             <nav>
                                 <ul class="nav-menu">
-                                    <li class="nav-item active"><a class="nav-link">アプリ</a></li>
-                                    <li class="nav-item"><a class="nav-link">寄付について</a></li>
-                                    <li class="nav-item"><a class="nav-link">作者</a></li>
-                                    <li class="nav-item"><a class="nav-link">お問い合わせ</a></li>
+                                    <li class="nav-item ${currentTab === 'apps' ? 'active' : ''}" onclick="switchTab('apps')"><a class="nav-link">アプリ</a></li>
+                                    <li class="nav-item ${currentTab === 'donation' ? 'active' : ''}" onclick="switchTab('donation')"><a class="nav-link">寄付について</a></li>
+                                    <li class="nav-item ${currentTab === 'author' ? 'active' : ''}" onclick="switchTab('author')"><a class="nav-link">作者</a></li>
+                                    <li class="nav-item ${currentTab === 'contact' ? 'active' : ''}" onclick="switchTab('contact')"><a class="nav-link">お問い合わせ</a></li>
                                 </ul>
                             </nav>
                         </div>
                     </header>
                     <main class="main-content">
-                        ${introHtml}
-                        ${genresHtml}
+                        <div style="display:${currentTab === 'apps' ? '' : 'none'}">
+                            ${introHtml}
+                            ${genresHtml}
+                        </div>
+                        <div style="display:${currentTab === 'donation' ? '' : 'none'}">${pageHtmlPreview('donation')}</div>
+                        <div style="display:${currentTab === 'author' ? '' : 'none'}">${pageHtmlPreview('author')}</div>
+                        <div style="display:${currentTab === 'contact' ? '' : 'none'}">${pageHtmlPreview('contact')}</div>
                     </main>
                 </div>
             `;
