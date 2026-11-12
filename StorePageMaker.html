@@ -92,6 +92,7 @@
     .app-developer { color: var(--primary-color); font-size: 14px; font-weight: bold; margin: 0; }
     .action-section { padding: 0 24px 24px 24px; }
     .btn-install { display: block; width: 100%; padding: 12px 0; background-color: var(--primary-color); color: white; text-align: center; text-decoration: none; border-radius: var(--btn-radius); font-size: 14px; font-weight: bold; border: none; cursor: pointer; }
+    .btn-apk { background-color: #ffffff; color: var(--primary-color); border: 2px solid var(--primary-color); margin-top: 10px; }
     .screenshots-section { padding: 0 0 24px 24px; overflow: hidden; }
     .preview-title { font-size: 18px; font-weight: bold; margin: 0 0 16px 0; padding-right: 24px;}
     .gallery-scroll { display: flex; gap: 12px; overflow-x: auto; padding-right: 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
@@ -147,6 +148,11 @@
         <input type="text" id="ed-appUrl">
     </div>
     <div class="editor-group">
+        <label>APKファイル URL (任意)</label>
+        <div class="help-text">Android APK のダウンロードボタンを追加する場合のみ入力。空欄ならボタンは表示されません。</div>
+        <input type="text" id="ed-apkUrl">
+    </div>
+    <div class="editor-group">
         <label>アプリアイコン URL</label>
         <div class="help-text">ストア画面の左上に表示される大きなメイン画像のファイル名（またはURL）です。</div>
         <input type="text" id="ed-appIcon">
@@ -156,6 +162,7 @@
     <div class="editor-group"><label>アプリ名</label><input type="text" id="ed-ja-title"></div>
     <div class="editor-group"><label>開発者名</label><input type="text" id="ed-ja-developer"></div>
     <div class="editor-group"><label>ボタンテキスト</label><input type="text" id="ed-ja-btn"></div>
+    <div class="editor-group"><label>APKボタンテキスト</label><input type="text" id="ed-ja-apkbtn"></div>
     <div class="editor-group"><label>スクショ見出し</label><input type="text" id="ed-ja-sc"></div>
     <div class="editor-group"><label>更新枠見出し</label><input type="text" id="ed-ja-whatsnew-title"></div>
     <div class="editor-group"><label>更新日</label><input type="text" id="ed-ja-whatsnew-date"></div>
@@ -167,6 +174,7 @@
     <div class="editor-group"><label>App Name</label><input type="text" id="ed-en-title"></div>
     <div class="editor-group"><label>Developer</label><input type="text" id="ed-en-developer"></div>
     <div class="editor-group"><label>Button Text</label><input type="text" id="ed-en-btn"></div>
+    <div class="editor-group"><label>APK Button Text</label><input type="text" id="ed-en-apkbtn"></div>
     <div class="editor-group"><label>Screenshots Title</label><input type="text" id="ed-en-sc"></div>
     <div class="editor-group"><label>What's New Title</label><input type="text" id="ed-en-whatsnew-title"></div>
     <div class="editor-group"><label>Date</label><input type="text" id="ed-en-whatsnew-date"></div>
@@ -201,6 +209,7 @@
         </div>
         <div class="action-section">
             <a id="ui-action-btn" class="btn-install" href="#" target="_blank"></a>
+        <a id="ui-apk-btn" class="btn-install btn-apk" href="#" target="_blank" style="display:none"></a>
         </div>
         <div class="screenshots-section">
             <h2 id="ui-screenshots-title" class="preview-title"></h2>
@@ -256,6 +265,7 @@
     .app-developer { color: var(--primary-color); font-size: 14px; font-weight: bold; margin: 0; }
     .action-section { padding: 0 24px 24px 24px; }
     .btn-install { display: block; width: 100%; padding: 12px 0; background-color: var(--primary-color); color: white; text-align: center; text-decoration: none; border-radius: var(--btn-radius); font-size: 14px; font-weight: bold; border: none; cursor: pointer; }
+    .btn-apk { background-color: #ffffff; color: var(--primary-color); border: 2px solid var(--primary-color); margin-top: 10px; }
     .screenshots-section { padding: 0 0 24px 24px; overflow: hidden; }
     .section-title { font-size: 18px; font-weight: bold; margin: 0 0 16px 0; padding-right: 24px;}
     .gallery-scroll { display: flex; gap: 12px; overflow-x: auto; padding-right: 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
@@ -310,6 +320,7 @@ let currentLang = 'ja';
     </div>
     <div class="action-section">
         <a id="ui-action-btn" class="btn-install" href="#" target="_blank"></a>
+        <a id="ui-apk-btn" class="btn-install btn-apk" href="#" target="_blank" style="display:none"></a>
     </div>
     <div class="screenshots-section">
         <h2 id="ui-screenshots-title" class="section-title"></h2>
@@ -361,6 +372,9 @@ function renderUI() {
     const actionBtn = document.getElementById('ui-action-btn');
     actionBtn.innerText = textData.buttonText || "";
     actionBtn.href = APP_CONFIG.appUrl || "#";
+    const apkBtn = document.getElementById('ui-apk-btn');
+    if (APP_CONFIG.apkUrl) { apkBtn.style.display = ""; apkBtn.innerText = textData.apkButtonText || ""; apkBtn.href = APP_CONFIG.apkUrl; }
+    else { apkBtn.style.display = "none"; }
     
     document.getElementById('ui-screenshots-title').innerText = textData.screenshotsTitle || "";
     document.getElementById('ui-description').innerHTML = textData.description || "";
@@ -484,19 +498,21 @@ window.onload = renderUI;
 const GAS_TRANSLATE_URL = "https://script.google.com/macros/s/AKfycbz1pZMs31cjfWC7mEf3n8_qWxV7zaY0ETxZmd7z4hW5bogBnsozLeSvsWU6F6a9WbMQ/exec";
 
 let APP_CONFIG = {
-    appUrl: "", appIcon: "", media: [ { type: "image", src: "" } ], moreApps: [],
-    ja: { title: "", developer: "", buttonText: "", screenshotsTitle: "", whatsnewTitle: "最新の更新内容", whatsnewDate: "", whatsnewDesc: "", moreAppsTitle: "", description: "", moreAppNames: {} },
-    en: { title: "", developer: "", buttonText: "", screenshotsTitle: "", whatsnewTitle: "What's New", whatsnewDate: "", whatsnewDesc: "", moreAppsTitle: "", description: "", moreAppNames: {} }
+    appUrl: "", apkUrl: "", appIcon: "", media: [ { type: "image", src: "" } ], moreApps: [],
+    ja: { title: "", developer: "", buttonText: "", apkButtonText: "", screenshotsTitle: "", whatsnewTitle: "最新の更新内容", whatsnewDate: "", whatsnewDesc: "", moreAppsTitle: "", description: "", moreAppNames: {} },
+    en: { title: "", developer: "", buttonText: "", apkButtonText: "", screenshotsTitle: "", whatsnewTitle: "What's New", whatsnewDate: "", whatsnewDesc: "", moreAppsTitle: "", description: "", moreAppNames: {} }
 };
 let currentLang = 'ja';
 
 function initEditor() {
     document.getElementById('ed-appUrl').value = APP_CONFIG.appUrl || "";
+    document.getElementById('ed-apkUrl').value = APP_CONFIG.apkUrl || "";
     document.getElementById('ed-appIcon').value = APP_CONFIG.appIcon || "";
     
     document.getElementById('ed-ja-title').value = APP_CONFIG.ja.title || "";
     document.getElementById('ed-ja-developer').value = APP_CONFIG.ja.developer || "";
     document.getElementById('ed-ja-btn').value = APP_CONFIG.ja.buttonText || "";
+    document.getElementById('ed-ja-apkbtn').value = APP_CONFIG.ja.apkButtonText || "";
     document.getElementById('ed-ja-sc').value = APP_CONFIG.ja.screenshotsTitle || "";
     document.getElementById('ed-ja-whatsnew-title').value = APP_CONFIG.ja.whatsnewTitle || "";
     document.getElementById('ed-ja-whatsnew-date').value = APP_CONFIG.ja.whatsnewDate || "";
@@ -507,6 +523,7 @@ function initEditor() {
     document.getElementById('ed-en-title').value = APP_CONFIG.en.title || "";
     document.getElementById('ed-en-developer').value = APP_CONFIG.en.developer || "";
     document.getElementById('ed-en-btn').value = APP_CONFIG.en.buttonText || "";
+    document.getElementById('ed-en-apkbtn').value = APP_CONFIG.en.apkButtonText || "";
     document.getElementById('ed-en-sc').value = APP_CONFIG.en.screenshotsTitle || "";
     document.getElementById('ed-en-whatsnew-title').value = APP_CONFIG.en.whatsnewTitle || "";
     document.getElementById('ed-en-whatsnew-date').value = APP_CONFIG.en.whatsnewDate || "";
@@ -530,11 +547,13 @@ function extractYouTubeID(url) {
 
 function updateConfigFromEditor() {
     APP_CONFIG.appUrl = document.getElementById('ed-appUrl').value;
+    APP_CONFIG.apkUrl = document.getElementById('ed-apkUrl').value;
     APP_CONFIG.appIcon = document.getElementById('ed-appIcon').value;
     
     APP_CONFIG.ja.title = document.getElementById('ed-ja-title').value;
     APP_CONFIG.ja.developer = document.getElementById('ed-ja-developer').value;
     APP_CONFIG.ja.buttonText = document.getElementById('ed-ja-btn').value;
+    APP_CONFIG.ja.apkButtonText = document.getElementById('ed-ja-apkbtn').value;
     APP_CONFIG.ja.screenshotsTitle = document.getElementById('ed-ja-sc').value;
     APP_CONFIG.ja.whatsnewTitle = document.getElementById('ed-ja-whatsnew-title').value;
     APP_CONFIG.ja.whatsnewDate = document.getElementById('ed-ja-whatsnew-date').value;
@@ -545,6 +564,7 @@ function updateConfigFromEditor() {
     APP_CONFIG.en.title = document.getElementById('ed-en-title').value;
     APP_CONFIG.en.developer = document.getElementById('ed-en-developer').value;
     APP_CONFIG.en.buttonText = document.getElementById('ed-en-btn').value;
+    APP_CONFIG.en.apkButtonText = document.getElementById('ed-en-apkbtn').value;
     APP_CONFIG.en.screenshotsTitle = document.getElementById('ed-en-sc').value;
     APP_CONFIG.en.whatsnewTitle = document.getElementById('ed-en-whatsnew-title').value;
     APP_CONFIG.en.whatsnewDate = document.getElementById('ed-en-whatsnew-date').value;
@@ -690,6 +710,7 @@ async function translateEmptyFields() {
         { ja: 'ed-ja-title', en: 'ed-en-title' }, 
         { ja: 'ed-ja-developer', en: 'ed-en-developer' }, 
         { ja: 'ed-ja-btn', en: 'ed-en-btn' }, 
+        { ja: 'ed-ja-apkbtn', en: 'ed-en-apkbtn' }, 
         { ja: 'ed-ja-sc', en: 'ed-en-sc' }, 
         { ja: 'ed-ja-whatsnew-title', en: 'ed-en-whatsnew-title' },
         { ja: 'ed-ja-whatsnew-date', en: 'ed-en-whatsnew-date' },
@@ -733,6 +754,9 @@ function renderUI() {
     
     const actionBtn = document.getElementById('ui-action-btn');
     actionBtn.innerText = textData.buttonText || ""; actionBtn.href = APP_CONFIG.appUrl || "#";
+    const apkBtn = document.getElementById('ui-apk-btn');
+    if (APP_CONFIG.apkUrl) { apkBtn.style.display = ""; apkBtn.innerText = textData.apkButtonText || ""; apkBtn.href = APP_CONFIG.apkUrl; }
+    else { apkBtn.style.display = "none"; }
     
     document.getElementById('ui-screenshots-title').innerText = textData.screenshotsTitle || "";
     document.getElementById('ui-description').innerHTML = textData.description || "";

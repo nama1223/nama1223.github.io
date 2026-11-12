@@ -16,6 +16,7 @@
     .app-developer { color: var(--primary-color); font-size: 14px; font-weight: bold; margin: 0; }
     .action-section { padding: 0 24px 24px 24px; }
     .btn-install { display: block; width: 100%; padding: 12px 0; background-color: var(--primary-color); color: white; text-align: center; text-decoration: none; border-radius: var(--btn-radius); font-size: 14px; font-weight: bold; border: none; cursor: pointer; }
+    .btn-apk { background-color: #ffffff; color: var(--primary-color); border: 2px solid var(--primary-color); margin-top: 10px; }
     .screenshots-section { padding: 0 0 24px 24px; overflow: hidden; }
     .section-title { font-size: 18px; font-weight: bold; margin: 0 0 16px 0; padding-right: 24px;}
     .gallery-scroll { display: flex; gap: 12px; overflow-x: auto; padding-right: 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
@@ -47,7 +48,7 @@
 </head>
 <body>
 <script>
-const APP_CONFIG = {"appUrl": "/NamaKe/", "appIcon": "/NamaKe/Namake512.png", "media": [{"type": "image", "src": "screen-top.jpg"}, {"type": "image", "src": "screen-calc.jpg"}, {"type": "image", "src": "screen-days.jpg"}, {"type": "image", "src": "screen-budget.jpg"}, {"type": "image", "src": "screen-year.jpg"}], "moreApps": [{"id": "namacollage", "icon": "/NamaCollage/NamaCollageLogo512.png", "url": "/NamaCollage/"}, {"id": "namatunepdf", "icon": "/NamaTunePDF/NamaTunePDF512.png", "url": "/NamaTunePDF/"}, {"id": "namapo", "icon": "/NamaPo/NamaPo512.png", "url": "/NamaPo/"}], "ja": {"title": "NamaKe ─ 計算ツール集「なまけ」─", "developer": "生", "buttonText": "Webアプリを起動", "screenshotsTitle": "スクリーンショット/画面説明", "description": "日々の「ちょっと計算したい」を集めた計算ツール集、その名も「なまけ」。「プライベート用途」と銘打っているのは、汎用化する気のない自分向け仕様が多めだからで、公開自体はしています。\n\n■ ツール全11種\n単なる電卓／日数計算機／予算収支計算機／「年」計算機／割り勘／単位変換／ToDoリスト／NamaStopwatch（なます）など。一覧の並べ替えもできます。\n\n■ 画面説明（スクリーンショットの見方）\n1) 一覧: 使いたいツールをタップ。左端のハンドルのドラッグで並べ替え。\n2) 単なる電卓: 大きめキーと、メモ欄3つつき。\n3) 日数計算機: 基準日＋日数で、和暦つきの日付をカレンダー表示。\n4) 予算収支計算機: 出費を追加していくと収支が自動計算。\n5) 「年」計算機: 西暦⇔和暦と、年齢まわりの変換。", "moreAppsTitle": "生 の他のアプリ", "moreAppNames": {"namacollage": "なまこ", "namatunepdf": "NamaTunePDF", "namapo": "NamaPo"}}, "en": {"title": "NamaKe - A Pocket Calculator Toolkit 'Namake' -", "developer": "Nama", "buttonText": "Launch Web App", "screenshotsTitle": "Screenshots & Guide", "description": "A collection of small calculators for everyday 'just need to compute this' moments. It calls itself 'for private use' because many tools are tailored to the author's own needs rather than generalized - but it is public.\n\n■ 11 tools\nPlain Calculator / Day Counter / Budget Calculator / Year Converter (Western <-> Japanese eras, ages) / Bill Splitter / Unit Converter / ToDo list / NamaStopwatch, and more. The list can be reordered.\n\n■ Screen Guide\n1) Tool list: tap a tool; drag the handle to reorder.\n2) Plain Calculator: big keys and three memo fields.\n3) Day Counter: base date + days, shown on a calendar with the Japanese era.\n4) Budget Calculator: add expenses and the balance updates automatically.\n5) Year Converter: era conversion and age-related calculations.", "moreAppsTitle": "More apps by Nama", "moreAppNames": {"namacollage": "なまこ", "namatunepdf": "NamaTunePDF", "namapo": "NamaPo"}}};
+const APP_CONFIG = {"appUrl": "/NamaKe/", "appIcon": "/NamaKe/Namake512.png", "media": [{"type": "image", "src": "screen-top.jpg"}, {"type": "image", "src": "screen-calc.jpg"}, {"type": "image", "src": "screen-days.jpg"}, {"type": "image", "src": "screen-budget.jpg"}, {"type": "image", "src": "screen-year.jpg"}], "moreApps": [{"id": "namacollage", "icon": "/NamaCollage/NamaCollageLogo512.png", "url": "/NamaCollage/"}, {"id": "namatunepdf", "icon": "/NamaTunePDF/NamaTunePDF512.png", "url": "/NamaTunePDF/"}, {"id": "namapo", "icon": "/NamaPo/NamaPo512.png", "url": "/NamaPo/"}], "ja": {"title": "NamaKe ─ 計算ツール集「なまけ」─", "developer": "生", "buttonText": "Webアプリを起動", "screenshotsTitle": "スクリーンショット/画面説明", "description": "日々の「ちょっと計算したい」を集めた計算ツール集、その名も「なまけ」。「プライベート用途」と銘打っているのは、汎用化する気のない自分向け仕様が多めだからで、公開自体はしています。\n\n■ ツール全11種\n単なる電卓／日数計算機／予算収支計算機／「年」計算機／割り勘／単位変換／ToDoリスト／NamaStopwatch（なます）など。一覧の並べ替えもできます。\n\n■ 画面説明（スクリーンショットの見方）\n1) 一覧: 使いたいツールをタップ。左端のハンドルのドラッグで並べ替え。\n2) 単なる電卓: 大きめキーと、メモ欄3つつき。\n3) 日数計算機: 基準日＋日数で、和暦つきの日付をカレンダー表示。\n4) 予算収支計算機: 出費を追加していくと収支が自動計算。\n5) 「年」計算機: 西暦⇔和暦と、年齢まわりの変換。", "moreAppsTitle": "生 の他のアプリ", "moreAppNames": {"namacollage": "なまこ", "namatunepdf": "NamaTunePDF", "namapo": "NamaPo"}, "apkButtonText": "🤖 APK版（Android）をダウンロード"}, "en": {"title": "NamaKe - A Pocket Calculator Toolkit 'Namake' -", "developer": "Nama", "buttonText": "Launch Web App", "screenshotsTitle": "Screenshots & Guide", "description": "A collection of small calculators for everyday 'just need to compute this' moments. It calls itself 'for private use' because many tools are tailored to the author's own needs rather than generalized - but it is public.\n\n■ 11 tools\nPlain Calculator / Day Counter / Budget Calculator / Year Converter (Western <-> Japanese eras, ages) / Bill Splitter / Unit Converter / ToDo list / NamaStopwatch, and more. The list can be reordered.\n\n■ Screen Guide\n1) Tool list: tap a tool; drag the handle to reorder.\n2) Plain Calculator: big keys and three memo fields.\n3) Day Counter: base date + days, shown on a calendar with the Japanese era.\n4) Budget Calculator: add expenses and the balance updates automatically.\n5) Year Converter: era conversion and age-related calculations.", "moreAppsTitle": "More apps by Nama", "moreAppNames": {"namacollage": "なまこ", "namatunepdf": "NamaTunePDF", "namapo": "NamaPo"}, "apkButtonText": "🤖 Download the Android APK"}, "apkUrl": "https://raw.githubusercontent.com/nama1223/NamaKe/main/NamaKe.apk"};
 let currentLang = 'ja';
 </script>
 
@@ -62,6 +63,7 @@ let currentLang = 'ja';
     </div>
     <div class="action-section">
         <a id="ui-action-btn" class="btn-install" href="#" target="_blank"></a>
+        <a id="ui-apk-btn" class="btn-install btn-apk" href="#" target="_blank" style="display:none"></a>
     </div>
     <div class="screenshots-section">
         <h2 id="ui-screenshots-title" class="section-title"></h2>
@@ -102,6 +104,9 @@ function renderUI() {
     const actionBtn = document.getElementById('ui-action-btn');
     actionBtn.innerText = textData.buttonText || "";
     actionBtn.href = APP_CONFIG.appUrl || "#";
+    const apkBtn = document.getElementById('ui-apk-btn');
+    if (APP_CONFIG.apkUrl) { apkBtn.style.display = ""; apkBtn.innerText = textData.apkButtonText || ""; apkBtn.href = APP_CONFIG.apkUrl; }
+    else { apkBtn.style.display = "none"; }
     
     document.getElementById('ui-screenshots-title').innerText = textData.screenshotsTitle || "";
     document.getElementById('ui-description').innerHTML = textData.description || "";

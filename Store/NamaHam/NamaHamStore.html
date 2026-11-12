@@ -16,6 +16,7 @@
     .app-developer { color: var(--primary-color); font-size: 14px; font-weight: bold; margin: 0; }
     .action-section { padding: 0 24px 24px 24px; }
     .btn-install { display: block; width: 100%; padding: 12px 0; background-color: var(--primary-color); color: white; text-align: center; text-decoration: none; border-radius: var(--btn-radius); font-size: 14px; font-weight: bold; border: none; cursor: pointer; }
+    .btn-apk { background-color: #ffffff; color: var(--primary-color); border: 2px solid var(--primary-color); margin-top: 10px; }
     .screenshots-section { padding: 0 0 24px 24px; overflow: hidden; }
     .section-title { font-size: 18px; font-weight: bold; margin: 0 0 16px 0; padding-right: 24px;}
     .gallery-scroll { display: flex; gap: 12px; overflow-x: auto; padding-right: 24px; scroll-snap-type: x mandatory; scrollbar-width: none; }
@@ -47,7 +48,7 @@
 </head>
 <body>
 <script>
-const APP_CONFIG = {"appUrl": "/NamaHam/", "appIcon": "/NamaHam/NamaHam512.png", "media": [{"type": "image", "src": "screen-keyboard.jpg"}, {"type": "image", "src": "screen-playing.jpg"}, {"type": "image", "src": "screen-settings.jpg"}], "moreApps": [{"id": "namasoundplus", "icon": "/NamaSoundPlus/NamaSoundPlus512.png", "url": "/NamaSoundPlus/"}, {"id": "namameto", "icon": "/NamaMeto/NamaMetoLogo512.png", "url": "/NamaMeto/NamaMeto.html"}, {"id": "namachu", "icon": "/Namachu/NamaChuLogo512.png", "url": "/Namachu/"}], "ja": {"title": "NamaHam ─ 弾くと和声がつく鍵盤 ─", "developer": "生", "buttonText": "Webアプリを起動", "screenshotsTitle": "スクリーンショット/画面説明", "description": "鍵盤を弾くと、いい感じの和声が自動でついてくるアプリ。調の判定も自動なので、思いつくまま弾いてもハーモニーが成立します。\n\n■ しくみ\n単音を弾くと、その流れから調を自動で判定して和音を付加。純正律にも対応し、平均律との響きの違いをその場で比べられます。\n\n■ カスタム\n移調、音色の切替、持続音のオン／オフ、音域シフト、音量。和声の付き方は複数モード（「根音を弾く」など）から選べます。\n\n■ 画面説明（スクリーンショットの見方）\n1) 鍵盤画面: 上のバーで各種切替、下のバーで和声モードと調・律の選択。\n2) 演奏中: 弾いた音から調（画面ではG）を自動判定して表示。\n3) 設定: 言語・スリープ防止・基準ピッチ（A=442Hz）・テーマカラー6色。", "moreAppsTitle": "生 の他のアプリ", "moreAppNames": {"namasoundplus": "NamaSound+", "namameto": "NamaMeto", "namachu": "NamaChu"}}, "en": {"title": "NamaHam - A Keyboard That Adds Harmony -", "developer": "Nama", "buttonText": "Launch Web App", "screenshotsTitle": "Screenshots & Guide", "description": "Play the keyboard and pleasant harmony is added automatically. The key is detected for you, so harmony works even when you just play whatever comes to mind.\n\n■ How it works\nPlay single notes and the app detects the key from your playing and adds chords. Just intonation is supported, so you can compare its sound with equal temperament on the spot.\n\n■ Customization\nTransposition, timbre switching, sustain on/off, range shift and volume. Several harmony modes are available, such as 'play the root'.\n\n■ Screen Guide\n1) Keyboard: top bar for switches, bottom bar for harmony mode, key and temperament.\n2) Playing: the key (G here) is auto-detected and shown.\n3) Settings: language, sleep prevention, reference pitch (A=442Hz), six theme colors.", "moreAppsTitle": "More apps by Nama", "moreAppNames": {"namasoundplus": "NamaSound+", "namameto": "NamaMeto", "namachu": "NamaChu"}}};
+const APP_CONFIG = {"appUrl": "/NamaHam/", "appIcon": "/NamaHam/NamaHam512.png", "media": [{"type": "image", "src": "screen-keyboard.jpg"}, {"type": "image", "src": "screen-playing.jpg"}, {"type": "image", "src": "screen-settings.jpg"}], "moreApps": [{"id": "namasoundplus", "icon": "/NamaSoundPlus/NamaSoundPlus512.png", "url": "/NamaSoundPlus/"}, {"id": "namameto", "icon": "/NamaMeto/NamaMetoLogo512.png", "url": "/NamaMeto/NamaMeto.html"}, {"id": "namachu", "icon": "/Namachu/NamaChuLogo512.png", "url": "/Namachu/"}], "ja": {"title": "NamaHam ─ 弾くと和声がつく鍵盤 ─", "developer": "生", "buttonText": "Webアプリを起動", "screenshotsTitle": "スクリーンショット/画面説明", "description": "鍵盤を弾くと、いい感じの和声が自動でついてくるアプリ。調の判定も自動なので、思いつくまま弾いてもハーモニーが成立します。\n\n■ しくみ\n単音を弾くと、その流れから調を自動で判定して和音を付加。純正律にも対応し、平均律との響きの違いをその場で比べられます。\n\n■ カスタム\n移調、音色の切替、持続音のオン／オフ、音域シフト、音量。和声の付き方は複数モード（「根音を弾く」など）から選べます。\n\n■ 画面説明（スクリーンショットの見方）\n1) 鍵盤画面: 上のバーで各種切替、下のバーで和声モードと調・律の選択。\n2) 演奏中: 弾いた音から調（画面ではG）を自動判定して表示。\n3) 設定: 言語・スリープ防止・基準ピッチ（A=442Hz）・テーマカラー6色。\n\n■ 統合版\nこのアプリは、メトロノーム（NamaMeto）・チューナー（NamaChu）と一緒になった統合アプリ <a href=\"/Store/NamaSoundPlus/NamaSoundPlusStore.html\">NamaSound+</a> にも収録されています。", "moreAppsTitle": "生 の他のアプリ", "moreAppNames": {"namasoundplus": "NamaSound+", "namameto": "NamaMeto", "namachu": "NamaChu"}}, "en": {"title": "NamaHam - A Keyboard That Adds Harmony -", "developer": "Nama", "buttonText": "Launch Web App", "screenshotsTitle": "Screenshots & Guide", "description": "Play the keyboard and pleasant harmony is added automatically. The key is detected for you, so harmony works even when you just play whatever comes to mind.\n\n■ How it works\nPlay single notes and the app detects the key from your playing and adds chords. Just intonation is supported, so you can compare its sound with equal temperament on the spot.\n\n■ Customization\nTransposition, timbre switching, sustain on/off, range shift and volume. Several harmony modes are available, such as 'play the root'.\n\n■ Screen Guide\n1) Keyboard: top bar for switches, bottom bar for harmony mode, key and temperament.\n2) Playing: the key (G here) is auto-detected and shown.\n3) Settings: language, sleep prevention, reference pitch (A=442Hz), six theme colors.\n\n■ In the bundle\nThis app is also included in <a href=\"/Store/NamaSoundPlus/NamaSoundPlusStore.html\">NamaSound+</a>, the bundle with the metronome (NamaMeto) and tuner (NamaChu).", "moreAppsTitle": "More apps by Nama", "moreAppNames": {"namasoundplus": "NamaSound+", "namameto": "NamaMeto", "namachu": "NamaChu"}}};
 let currentLang = 'ja';
 </script>
 
@@ -62,6 +63,7 @@ let currentLang = 'ja';
     </div>
     <div class="action-section">
         <a id="ui-action-btn" class="btn-install" href="#" target="_blank"></a>
+        <a id="ui-apk-btn" class="btn-install btn-apk" href="#" target="_blank" style="display:none"></a>
     </div>
     <div class="screenshots-section">
         <h2 id="ui-screenshots-title" class="section-title"></h2>
@@ -102,6 +104,9 @@ function renderUI() {
     const actionBtn = document.getElementById('ui-action-btn');
     actionBtn.innerText = textData.buttonText || "";
     actionBtn.href = APP_CONFIG.appUrl || "#";
+    const apkBtn = document.getElementById('ui-apk-btn');
+    if (APP_CONFIG.apkUrl) { apkBtn.style.display = ""; apkBtn.innerText = textData.apkButtonText || ""; apkBtn.href = APP_CONFIG.apkUrl; }
+    else { apkBtn.style.display = "none"; }
     
     document.getElementById('ui-screenshots-title').innerText = textData.screenshotsTitle || "";
     document.getElementById('ui-description').innerHTML = textData.description || "";
