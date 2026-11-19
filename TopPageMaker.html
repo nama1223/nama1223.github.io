@@ -43,6 +43,9 @@
     .app-edit-list { margin-top: 8px; border-top: 1px dashed #dadce0; padding-top: 12px; }
     .app-edit-block { background: #f8f9fa; border: 1px solid #e8eaed; border-radius: 6px; padding: 12px; margin-bottom: 12px; }
     .app-edit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; font-weight: bold; color: #5f6368; border-bottom: 1px solid #e8eaed; padding-bottom: 4px; }
+    .block-edit { background: #ffffff; border: 1px solid #dadce0; border-radius: 8px; padding: 12px; margin-bottom: 12px; }
+    .block-edit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: #5f6368; border-bottom: 1px solid #e8eaed; padding-bottom: 6px; }
+    .block-ctrls { display: flex; gap: 4px; }
 
     .status-bar { font-size: 11px; color: #5f6368; text-align: center; margin-bottom: 10px; }
     .reset-btn { font-size: 11px; color: #d93025; background: none; border: none; text-decoration: underline; cursor: pointer; }
@@ -70,6 +73,11 @@
     .store-top-view .page-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e8eaed; }
     .store-top-view .page-body { font-size: 14px; line-height: 1.7; color: #3c4043; white-space: pre-wrap; }
     .store-top-view .page-body a { color: #01875f; font-weight: bold; text-decoration: none; }
+    .store-top-view .page-block { margin-bottom: 22px; }
+    .store-top-view .page-block:last-child { margin-bottom: 0; }
+    .store-top-view .page-heading { font-size: 16px; font-weight: bold; color: #202124; margin: 0 0 8px 0; padding-left: 10px; border-left: 4px solid #01875f; line-height: 1.45; }
+    .store-top-view .page-text { font-size: 14px; line-height: 1.7; color: #3c4043; white-space: pre-wrap; }
+    .store-top-view .page-text a { color: #01875f; font-weight: bold; text-decoration: none; }
     .store-top-view .page-btn { display: block; margin-top: 20px; padding: 12px 0; background-color: #01875f; color: #ffffff; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: bold; }
     .store-top-view .nav-item { cursor: pointer; }
     
@@ -140,6 +148,11 @@
     .page-section { background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #e8eaed; }
     .page-body { font-size: 14px; line-height: 1.7; color: #3c4043; white-space: pre-wrap; }
     .page-body a { color: #01875f; font-weight: bold; text-decoration: none; }
+    .page-block { margin-bottom: 22px; }
+    .page-block:last-child { margin-bottom: 0; }
+    .page-heading { font-size: 16px; font-weight: bold; color: #202124; margin: 0 0 8px 0; padding-left: 10px; border-left: 4px solid #01875f; line-height: 1.45; }
+    .page-text { font-size: 14px; line-height: 1.7; color: #3c4043; white-space: pre-wrap; }
+    .page-text a { color: #01875f; font-weight: bold; text-decoration: none; }
     .page-btn { display: block; margin-top: 20px; padding: 12px 0; background-color: #01875f; color: #ffffff; text-align: center; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: bold; }
     
     .genre-section { margin-bottom: 32px; }
@@ -232,7 +245,7 @@
                                 </div>
                                 <div class="app-card-details">
                                     <div class="app-meta">
-                                        <img src="\${escapeHtml(finalIcon)}" class="app-icon" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'32\\' height=\\'32\\' viewBox=\\'0 0 32 32\\'><rect width=\\'32\\' height=\\'32\\' fill=\\'%23f1f3f4\\'/><circle cx=\\'16\\' cy=\\'16\\' r=\\'8\\' fill=\\'%23bdc1c6\\'/></svg>';">
+                                        <img src="\${escapeHtml(finalIcon)}" class="app-icon" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\\\\'http://www.w3.org/2000/svg\\\\' width=\\\\'32\\\\' height=\\\\'32\\\\' viewBox=\\\\'0 0 32 32\\\\'><rect width=\\\\'32\\\\' height=\\\\'32\\\\' fill=\\\\'%23f1f3f4\\\\'/><circle cx=\\\\'16\\\\' cy=\\\\'16\\\\' r=\\\\'8\\\\' fill=\\\\'%23bdc1c6\\\\'/></svg>';">
                                         <h3 class="app-name">\${escapeHtml(app.name || '未命名アプリ')}</h3>
                                     </div>
                                     \${descHtml}
@@ -258,9 +271,22 @@
 
                 const introHtml = config.siteIntro ? \`<div class="intro-section"><p class="intro-text">\${escapeHtml(config.siteIntro)}</p></div>\` : '';
 
+                function pageBlocksHtml(p) {
+                    let h = '';
+                    const blocks = Array.isArray(p.blocks) ? p.blocks : [];
+                    for (let i = 0; i < blocks.length; i++) {
+                        const b = blocks[i] || {};
+                        h += '<div class="page-block">';
+                        if (b.heading) h += '<h3 class="page-heading">' + escapeHtml(b.heading) + '</h3>';
+                        if (b.body) h += '<div class="page-text">' + b.body + '</div>';
+                        h += '</div>';
+                    }
+                    return h;
+                }
+
                 function pageHtml(key) {
                     const p = (config.pages || {})[key] || {};
-                    let h = '<section class="page-section"><div class="page-body">' + (p.body || '') + '</div>';
+                    let h = '<section class="page-section">' + pageBlocksHtml(p);
                     const url = key === 'donation' ? (p.linkUrl || '') : (key === 'contact' ? (p.formUrl || '') : '');
                     const label = key === 'donation' ? (p.linkLabel || '') : (key === 'contact' ? (p.formLabel || '') : '');
                     if (url) h += '<a class="page-btn" href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' + escapeHtml(label || '開く') + '</a>';
@@ -322,16 +348,30 @@
 
         const DEFAULT_PAGES = {
             donation: {
-                body: "■ ほしいものリスト\n（ほしいものリストを置いている理由や、見てほしい人への一言を書く欄）\n※下のボタンからリストを開けます（ボタンは「リンクURL」欄を設定すると表示されます）\n\n■ 寄付・ご支援についての考え\n（支援は必須ではないこと／どんな気持ちで置いているか など、自分の考えを書く欄）\n\n■ いただいたものの使い道\n（例：楽器のメンテナンス、録音機材、開発環境の維持など）\n\n■ お礼\n（支援してくれた人へのお礼を書く欄）",
+                blocks: [
+                    { heading: "ほしいものリスト", body: "（ほしいものリストを置いている理由や、見てほしい人への一言を書く欄）\n※下のボタンからリストを開けます（ボタンは「リンクURL」欄を設定すると表示されます）" },
+                    { heading: "寄付・ご支援についての考え", body: "（支援は必須ではないこと／どんな気持ちで置いているか など、自分の考えを書く欄）" },
+                    { heading: "いただいたものの使い道", body: "（例：楽器のメンテナンス、録音機材、開発環境の維持など）" },
+                    { heading: "お礼", body: "（支援してくれた人へのお礼を書く欄）" }
+                ],
                 linkUrl: "",
                 linkLabel: "🎁 ほしいものリストを開く"
             },
             author: {
-                body: "■ プロフィール\n（名前や、ひとこと自己紹介を書く欄）\n\n■ 作っているもの\n（このサイトで公開しているアプリ群について書く欄）\n\n■ 音楽活動\n（所属している団体、担当楽器、演奏歴などを書く欄）\n\n■ 開発について\n（アプリ開発の進め方や、使っている道具について書く欄）\n\n■ このサイトについて\n（更新の方針や、公開範囲について書く欄）"
+                blocks: [
+                    { heading: "プロフィール", body: "（名前や、ひとこと自己紹介を書く欄）" },
+                    { heading: "作っているもの", body: "（このサイトで公開しているアプリ群について書く欄）" },
+                    { heading: "音楽活動", body: "（所属している団体、担当楽器、演奏歴などを書く欄）" },
+                    { heading: "開発について", body: "（アプリ開発の進め方や、使っている道具について書く欄）" },
+                    { heading: "このサイトについて", body: "（更新の方針や、公開範囲について書く欄）" }
+                ]
             },
             contact: {
-                body: "■ ご連絡の前に（よく読んでください）\n・返信が極度に苦手なため、ほとんどの場合お返事はできません\n・内容にはできる範囲で目を通しますが、対応や修正をお約束するものではありません\n・不具合の報告は、機種名と「どの画面で・どうなったか」を書いていただけると助かります\n・個人情報や金銭に関わる内容は送らないでください\n\n■ それでも伝えたいことがある場合\n下のボタンからフォームを開いて送信してください。\n（ボタンは「フォームURL」欄を設定すると表示されます）",
-                formUrl: "",
+                blocks: [
+                    { heading: "ご連絡の前に（よく読んでください）", body: "・返信が極度に苦手なため、ほとんどの場合お返事はできません\n・内容にはできる範囲で目を通しますが、対応や修正をお約束するものではありません\n・不具合の報告は、機種名と「どの画面で・どうなったか」を書いていただけると助かります\n・個人情報や金銭に関わる内容は送らないでください" },
+                    { heading: "それでも伝えたいことがある場合", body: "下のボタンからフォームを開いて送信してください。\n（ボタンは「フォームURL」欄を設定すると表示されます）" }
+                ],
+                formUrl: "https://forms.gle/DajdYBhJhJrD7rq48",
                 formLabel: "📮 お問い合わせフォームを開く"
             }
         };
@@ -408,6 +448,38 @@
         function encodeBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
         function decodeBase64(str) { return decodeURIComponent(escape(atob(str))); }
 
+        // 旧形式（body文字列1本）→新形式（blocks配列）への変換。
+        // 行頭「■ 」を見出しとして分割し、見出しより前の本文は見出し空ブロックにする。
+        function bodyToBlocks(body) {
+            if (typeof body !== 'string' || body === '') return [];
+            const blocks = [];
+            let cur = null;
+            body.split('\n').forEach(function(line) {
+                if (line.indexOf('■ ') === 0) {
+                    cur = { heading: line.slice(2).trim(), bodyLines: [] };
+                    blocks.push(cur);
+                } else {
+                    if (!cur) { cur = { heading: '', bodyLines: [] }; blocks.push(cur); }
+                    cur.bodyLines.push(line);
+                }
+            });
+            return blocks.map(function(b) {
+                return { heading: b.heading, body: b.bodyLines.join('\n').trim() };
+            }).filter(function(b) { return b.heading !== '' || b.body !== ''; });
+        }
+
+        // 読み込んだページデータから blocks を確定する（新形式は整形、旧形式は変換、無ければ既定値）
+        function resolvePageBlocks(ld, dflt) {
+            if (Array.isArray(ld.blocks)) {
+                return ld.blocks.map(function(b) {
+                    if (!b || typeof b !== 'object') return { heading: '', body: '' };
+                    return { heading: typeof b.heading === 'string' ? b.heading : '', body: typeof b.body === 'string' ? b.body : '' };
+                });
+            }
+            if (typeof ld.body === 'string') return bodyToBlocks(ld.body);
+            return JSON.parse(JSON.stringify(dflt.blocks || []));
+        }
+
         function mergeWithDefault(loadedData) {
             if (!loadedData || typeof loadedData !== 'object') return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
             let merged = {};
@@ -442,7 +514,7 @@
                 const dflt = DEFAULT_CONFIG.pages[k] || {};
                 const ld = (loadedData.pages || {})[k] || {};
                 merged.pages[k] = {
-                    body: ld.body !== undefined ? ld.body : (dflt.body || ''),
+                    blocks: resolvePageBlocks(ld, dflt),
                     linkUrl: ld.linkUrl || '',
                     linkLabel: ld.linkLabel !== undefined ? ld.linkLabel : (dflt.linkLabel || ''),
                     formUrl: ld.formUrl || '',
@@ -503,14 +575,32 @@
         function switchTab(tab) { currentTab = tab; renderEditor(); renderPreview(); }
         function updatePageField(page, field, val) { if (APP_CONFIG.pages && APP_CONFIG.pages[page]) { APP_CONFIG.pages[page][field] = val; saveToStorage(); renderPreview(); } }
 
+        function pageBlocksHtml(p) {
+            let h = '';
+            const blocks = Array.isArray(p.blocks) ? p.blocks : [];
+            blocks.forEach(function(b) {
+                h += '<div class="page-block">';
+                if (b.heading) h += '<h3 class="page-heading">' + escapeHtml(b.heading) + '</h3>';
+                if (b.body) h += '<div class="page-text">' + b.body + '</div>';
+                h += '</div>';
+            });
+            return h;
+        }
+
         function pageHtmlPreview(key) {
             const p = (APP_CONFIG.pages || {})[key] || {};
-            let h = '<section class="page-section"><div class="page-body">' + (p.body || '') + '</div>';
+            let h = '<section class="page-section">' + pageBlocksHtml(p);
             const url = key === 'donation' ? (p.linkUrl || '') : (key === 'contact' ? (p.formUrl || '') : '');
             const label = key === 'donation' ? (p.linkLabel || '') : (key === 'contact' ? (p.formLabel || '') : '');
             if (url) h += '<a class="page-btn" href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' + escapeHtml(label || '開く') + '</a>';
             return h + '</section>';
         }
+
+        // --- 本文ブロックの操作（入力は自動保存＋プレビュー再描画、構造変更は編集欄も再描画） ---
+        function updateBlockField(page, bIdx, field, val) { const p = APP_CONFIG.pages && APP_CONFIG.pages[page]; if (p && Array.isArray(p.blocks) && p.blocks[bIdx]) { p.blocks[bIdx][field] = val; saveToStorage(); renderPreview(); } }
+        function addBlock(page) { const p = APP_CONFIG.pages && APP_CONFIG.pages[page]; if (!p) return; if (!Array.isArray(p.blocks)) p.blocks = []; p.blocks.push({ heading: '', body: '' }); saveToStorage(); renderEditor(); renderPreview(); }
+        function deleteBlock(page, bIdx) { const p = APP_CONFIG.pages && APP_CONFIG.pages[page]; if (!p || !Array.isArray(p.blocks)) return; p.blocks.splice(bIdx, 1); saveToStorage(); renderEditor(); renderPreview(); }
+        function moveBlock(page, bIdx, dir) { const p = APP_CONFIG.pages && APP_CONFIG.pages[page]; if (!p || !Array.isArray(p.blocks)) return; const t = bIdx + dir; if (t < 0 || t >= p.blocks.length) return; const tmp = p.blocks[bIdx]; p.blocks[bIdx] = p.blocks[t]; p.blocks[t] = tmp; saveToStorage(); renderEditor(); renderPreview(); }
 
         function tabBarHtml() {
             const tabs = [['apps', 'アプリ'], ['donation', '寄付について'], ['author', '作者'], ['contact', 'お問い合わせ']];
@@ -526,7 +616,21 @@
             const p = APP_CONFIG.pages[tab];
             const titles = { donation: '寄付について', author: '作者', contact: 'お問い合わせ' };
             let h = '<div class="section-title">' + titles[tab] + ' ページ編集</div>';
-            h += '<div class="form-group"><label>本文（改行・HTMLタグ可。見出しは「■ 」で始めるのがおすすめ）</label><textarea rows="16" oninput="updatePageField(\'' + tab + '\', \'body\', this.value)">' + escapeHtml(p.body || '') + '</textarea></div>';
+            h += '<p style="font-size:12px; color:#5f6368; margin:0 0 12px 0;">本文は「見出し＋本文」のブロック単位で編集します。本文欄は改行・HTMLタグが使えます。見出しを空欄にすると、見出しなしの本文として表示されます。</p>';
+            const blocks = Array.isArray(p.blocks) ? p.blocks : [];
+            blocks.forEach(function(b, bIdx) {
+                h += '<div class="block-edit">'
+                    + '<div class="block-edit-header"><span>ブロック ' + (bIdx + 1) + '</span>'
+                    + '<div class="block-ctrls">'
+                    + '<button class="btn btn-secondary btn-sm" onclick="moveBlock(\'' + tab + '\', ' + bIdx + ', -1)">▲ 上へ</button>'
+                    + '<button class="btn btn-secondary btn-sm" onclick="moveBlock(\'' + tab + '\', ' + bIdx + ', 1)">▼ 下へ</button>'
+                    + '<button class="btn btn-danger btn-sm" onclick="deleteBlock(\'' + tab + '\', ' + bIdx + ')">削除</button>'
+                    + '</div></div>'
+                    + '<div class="form-group"><label>見出し（空欄なら見出しなし）</label><input type="text" value="' + escapeHtml(b.heading || '') + '" oninput="updateBlockField(\'' + tab + '\', ' + bIdx + ', \'heading\', this.value)" placeholder="見出しを入力"></div>'
+                    + '<div class="form-group" style="margin-bottom:0;"><label>本文（改行・HTMLタグ可）</label><textarea rows="6" oninput="updateBlockField(\'' + tab + '\', ' + bIdx + ', \'body\', this.value)">' + escapeHtml(b.body || '') + '</textarea></div>'
+                    + '</div>';
+            });
+            h += '<button class="btn btn-secondary" style="margin-bottom:16px;" onclick="addBlock(\'' + tab + '\')">＋ ブロックを追加</button>';
             if (tab === 'donation') {
                 h += '<div class="form-group"><label>ほしいものリストのURL（ボタン用・空欄ならボタンなし）</label><input type="text" value="' + escapeHtml(p.linkUrl || '') + '" oninput="updatePageField(\'donation\', \'linkUrl\', this.value)"></div>';
                 h += '<div class="form-group"><label>リンクボタンの文言</label><input type="text" value="' + escapeHtml(p.linkLabel || '') + '" oninput="updatePageField(\'donation\', \'linkLabel\', this.value)"></div>';
