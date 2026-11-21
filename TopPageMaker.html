@@ -180,6 +180,11 @@
     .device-tab.active { background-color: #e6f3ef; color: #01875f; border-color: #c2e2d6; }
     .blog-frame { width: 100%; height: calc(100dvh - 120px); min-height: 420px; border: none; display: block; background: #ffffff; border-radius: 8px; }
     #view-blog { margin: 0 -8px; }
+    body.blog-mode { overflow: hidden; }
+    body.blog-mode #store-root { display: flex; flex-direction: column; height: 100dvh; }
+    body.blog-mode .main-content { flex: 1; min-height: 0; display: flex; flex-direction: column; width: 100%; }
+    body.blog-mode #view-blog { flex: 1; min-height: 0; display: flex; }
+    body.blog-mode .blog-frame { flex: 1; height: auto; min-height: 0; }
 
     @media (max-width: 600px) {
         .navbar { padding: 8px 12px; }
@@ -336,6 +341,7 @@
                     item.addEventListener('click', function(e) {
                         e.preventDefault();
                         const tab = item.getAttribute('data-tab');
+                        document.body.classList.toggle('blog-mode', tab === 'blog');
                         document.querySelectorAll('.nav-item[data-tab]').forEach(function(n) { n.classList.toggle('active', n === item); });
                         if (tab === 'blog') {
                             const bf = document.getElementById('blogFrame');
