@@ -150,8 +150,8 @@
 
                 const introHtml = config.siteIntro ? `<div class="intro-section"><p class="intro-text">${escapeHtml(config.siteIntro)}</p></div>` : '';
                 const blogUrl = (config.blogUrl || '').trim() || 'https://nama1223.com/NaMaMeMo/?p=2ae3dd38-13bb-40e6-b0e3-66dc19f74bcd';
-                const blogNavHtml = blogUrl ? `<li class="nav-item" data-tab="blog"><a href="#" class="nav-link">ブログ</a></li>` : '';
-                const blogViewHtml = blogUrl ? `<div id="view-blog" style="display:none"><iframe id="blogFrame" class="blog-frame" title="ブログ"></iframe></div>` : '';
+                const blogNavHtml = blogUrl ? `<li class="nav-item" data-tab="blog"><a href="#" class="nav-link">文章</a></li>` : '';
+                const blogViewHtml = blogUrl ? `<div id="view-blog" style="display:none"><iframe id="blogFrame" class="blog-frame" title="文章"></iframe></div>` : '';
 
                 function pageBlocksHtml(p) {
                     let h = '';

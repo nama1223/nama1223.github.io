@@ -275,8 +275,8 @@
 
                 const introHtml = config.siteIntro ? \`<div class="intro-section"><p class="intro-text">\${escapeHtml(config.siteIntro)}</p></div>\` : '';
                 const blogUrl = (config.blogUrl || '').trim() || 'https://nama1223.com/NaMaMeMo/?p=2ae3dd38-13bb-40e6-b0e3-66dc19f74bcd';
-                const blogNavHtml = blogUrl ? \`<li class=\"nav-item\" data-tab=\"blog\"><a href=\"#\" class=\"nav-link\">ブログ</a></li>\` : '';
-                const blogViewHtml = blogUrl ? \`<div id=\"view-blog\" style=\"display:none\"><iframe id=\"blogFrame\" class=\"blog-frame\" title=\"ブログ\"></iframe></div>\` : '';
+                const blogNavHtml = blogUrl ? \`<li class=\"nav-item\" data-tab=\"blog\"><a href=\"#\" class=\"nav-link\">文章</a></li>\` : '';
+                const blogViewHtml = blogUrl ? \`<div id=\"view-blog\" style=\"display:none\"><iframe id=\"blogFrame\" class=\"blog-frame\" title=\"文章\"></iframe></div>\` : '';
 
                 function pageBlocksHtml(p) {
                     let h = '';
@@ -686,7 +686,7 @@
                     <input type="text" value="${escapeHtml(APP_CONFIG.logoSrc)}" oninput="APP_CONFIG.logoSrc=this.value; saveToStorage(); renderPreview();">
                 </div>
                 <div class="form-group">
-                    <label>ブログURL（NaMaMeMoの公開URL・空欄ならブログタブなし）</label>
+                    <label>文章URL（NaMaMeMoの公開URL・空欄なら文章タブなし）</label>
                     <input type="text" value="${escapeHtml(APP_CONFIG.blogUrl || '')}" oninput="APP_CONFIG.blogUrl=this.value; saveToStorage(); renderPreview();">
                 </div>
                 
@@ -854,7 +854,7 @@
                                     <li class="nav-item ${currentTab === 'donation' ? 'active' : ''}" onclick="switchTab('donation')"><a class="nav-link">寄付について</a></li>
                                     <li class="nav-item ${currentTab === 'author' ? 'active' : ''}" onclick="switchTab('author')"><a class="nav-link">作者</a></li>
                                     <li class="nav-item ${currentTab === 'contact' ? 'active' : ''}" onclick="switchTab('contact')"><a class="nav-link">お問い合わせ</a></li>
-                                    ${APP_CONFIG.blogUrl ? '<li class="nav-item ' + (currentTab === 'blog' ? 'active' : '') + '" onclick="switchTab(\'blog\')"><a class="nav-link">ブログ</a></li>' : ''}
+                                    ${APP_CONFIG.blogUrl ? '<li class="nav-item ' + (currentTab === 'blog' ? 'active' : '') + '" onclick="switchTab(\'blog\')"><a class="nav-link">文章</a></li>' : ''}
                                 </ul>
                             </nav>
                         </div>
@@ -867,7 +867,7 @@
                         <div style="display:${currentTab === 'donation' ? '' : 'none'}">${pageHtmlPreview('donation')}</div>
                         <div style="display:${currentTab === 'author' ? '' : 'none'}">${pageHtmlPreview('author')}</div>
                         <div style="display:${currentTab === 'contact' ? '' : 'none'}">${pageHtmlPreview('contact')}</div>
-                        <div style="display:${currentTab === 'blog' ? '' : 'none'}">${APP_CONFIG.blogUrl ? '<iframe src="' + escapeHtml(APP_CONFIG.blogUrl) + '" style="width:100%; height:480px; border:none; border-radius:8px; background:#fff;" title="ブログ"></iframe>' : ''}</div>
+                        <div style="display:${currentTab === 'blog' ? '' : 'none'}">${APP_CONFIG.blogUrl ? '<iframe src="' + escapeHtml(APP_CONFIG.blogUrl) + '" style="width:100%; height:480px; border:none; border-radius:8px; background:#fff;" title="文章"></iframe>' : ''}</div>
                     </main>
                 </div>
             `;
