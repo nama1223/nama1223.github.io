@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NamaMeto Store GUI Editor V4.1</title>
+<title>NamaStudio Store GUI Editor V4.1</title>
 <style>
     /* =========================================
        1. エディタ領域のスタイル
@@ -253,7 +253,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NamaMeto Download Page</title>
+<title>NamaStudio Download Page</title>
 <style>
     :root { --primary-color: #01875f; --bg-color: #ffffff; --text-main: #202124; --text-sub: #5f6368; --border-color: #e8eaed; --btn-radius: 8px; }
     body { font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: var(--text-main); }
@@ -860,7 +860,7 @@ function exportHTML() {
     const finalHTML = template.replace('/*%%%APP_CONFIG_JSON%%%*/', configStr);
     const blob = new Blob([finalHTML], { type: 'text/html' });
     const url = URL.createObjectURL(blob); const a = document.createElement('a');
-    a.href = url; a.download = 'NamaMetoStore_Updated.html'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    a.href = url; a.download = 'NamaStudioStore_Updated.html'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 }
 
 window.onload = () => { initEditor(); renderUI(); };
