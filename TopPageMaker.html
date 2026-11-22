@@ -244,6 +244,9 @@
                         const smartClass = devs.smart ? 'active' : '';
                         const tabletClass = devs.tablet ? 'active' : '';
                         const pcClass = devs.pc ? 'active' : '';
+                        const langs = app.langs || { jp: true, en: false };
+                        const jpClass = langs.jp ? 'active' : '';
+                        const enClass = langs.en ? 'active' : '';
                         const descHtml = app.intro ? \`<p class="app-desc">\${escapeHtml(app.intro)}</p>\` : '';
                         
                         // パスの結合
@@ -267,6 +270,8 @@
                                         <span class="device-tab \${smartClass}">スマ</span>
                                         <span class="device-tab \${tabletClass}">タブ</span>
                                         <span class="device-tab \${pcClass}">ＰＣ</span>
+                                        <span class="device-tab \${jpClass}" style="margin-left:auto;">JP</span>
+                                        <span class="device-tab \${enClass}">EN</span>
                                     </div>
                                 </div>
                             </a>
@@ -421,6 +426,7 @@
                             icon: "NamaStudioLogoHalf.png",
                             screenshot: "",
                             devices: { smart: true, tablet: true, pc: false },
+                            langs: { jp: true, en: false },
                             isPrivate: false
                         }
                     ]
@@ -529,6 +535,7 @@
                                 icon: a.icon || "",
                                 screenshot: a.screenshot || "",
                                 devices: Object.assign({ smart: false, tablet: false, pc: false }, a.devices || {}),
+                                langs: Object.assign({ jp: true, en: false }, a.langs || {}),
                                 isPrivate: !!a.isPrivate
                             });
                         });
@@ -631,7 +638,8 @@
         
         function updateAppField(gIdx, aIdx, field, val) { APP_CONFIG.genres[gIdx].apps[aIdx][field] = val; saveToStorage(); renderPreview(); }
         function updateAppDevice(gIdx, aIdx, device, checked) { APP_CONFIG.genres[gIdx].apps[aIdx].devices[device] = checked; saveToStorage(); renderPreview(); }
-        function addApp(gIdx) { APP_CONFIG.genres[gIdx].apps.push({ id: "app_" + Date.now(), folder: "", name: "新着アプリ", intro: "", url: "#", icon: "", screenshot: "", devices: { smart: true, tablet: false, pc: false }, isPrivate: false }); saveToStorage(); renderEditor(); renderPreview(); }
+        function updateAppLang(gIdx, aIdx, lang, checked) { if (!APP_CONFIG.genres[gIdx].apps[aIdx].langs) APP_CONFIG.genres[gIdx].apps[aIdx].langs = { jp: true, en: false }; APP_CONFIG.genres[gIdx].apps[aIdx].langs[lang] = checked; saveToStorage(); renderPreview(); }
+        function addApp(gIdx) { APP_CONFIG.genres[gIdx].apps.push({ id: "app_" + Date.now(), folder: "", name: "新着アプリ", intro: "", url: "#", icon: "", screenshot: "", devices: { smart: true, tablet: false, pc: false }, langs: { jp: true, en: false }, isPrivate: false }); saveToStorage(); renderEditor(); renderPreview(); }
         function deleteApp(gIdx, aIdx) { APP_CONFIG.genres[gIdx].apps.splice(aIdx, 1); saveToStorage(); renderEditor(); renderPreview(); }
         function moveApp(gIdx, aIdx, dir) { const apps = APP_CONFIG.genres[gIdx].apps; if (dir === -1 && aIdx === 0) return; if (dir === 1 && aIdx === apps.length - 1) return; const target = aIdx + dir; const temp = apps[aIdx]; apps[aIdx] = apps[target]; apps[target] = temp; saveToStorage(); renderEditor(); renderPreview(); }
 
@@ -818,6 +826,13 @@
                                     <label class="checkbox-label"><input type="checkbox" ${app.devices.pc ? 'checked' : ''} onchange="updateAppDevice(${gIdx}, ${aIdx}, 'pc', this.checked)">ＰＣ</label>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label>対応言語</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label"><input type="checkbox" ${app.langs && app.langs.jp ? 'checked' : ''} onchange="updateAppLang(${gIdx}, ${aIdx}, 'jp', this.checked)">JP</label>
+                                    <label class="checkbox-label"><input type="checkbox" ${app.langs && app.langs.en ? 'checked' : ''} onchange="updateAppLang(${gIdx}, ${aIdx}, 'en', this.checked)">EN</label>
+                                </div>
+                            </div>
                             <div class="form-group" style="margin-top:10px;">
                                 <label class="checkbox-label" style="color:#d93025; font-weight:bold;">
                                     <input type="checkbox" ${app.isPrivate ? 'checked' : ''} onchange="updateAppField(${gIdx}, ${aIdx}, 'isPrivate', this.checked)"> [非公開] にしてグレーアウト
@@ -854,6 +869,9 @@
                     const smartClass = app.devices.smart ? 'active' : '';
                     const tabletClass = app.devices.tablet ? 'active' : '';
                     const pcClass = app.devices.pc ? 'active' : '';
+                    const langs = app.langs || { jp: true, en: false };
+                    const jpClass = langs.jp ? 'active' : '';
+                    const enClass = langs.en ? 'active' : '';
                     const descHtml = app.intro ? `<p class="app-desc">${escapeHtml(app.intro)}</p>` : '';
                     
                     // パスの結合
@@ -877,6 +895,8 @@
                                     <span class="device-tab ${smartClass}">スマ</span>
                                     <span class="device-tab ${tabletClass}">タブ</span>
                                     <span class="device-tab ${pcClass}">ＰＣ</span>
+                                    <span class="device-tab ${jpClass}" style="margin-left:auto;">JP</span>
+                                    <span class="device-tab ${enClass}">EN</span>
                                 </div>
                             </div>
                         </div>
