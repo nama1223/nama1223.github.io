@@ -36,6 +36,9 @@
     .file-input-wrapper { background: #e8eaed; border: 2px dashed #bdc1c6; padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 20px; }
     .file-input-wrapper input[type="file"] { display: none; }
     .file-input-label { cursor: pointer; display: block; font-size: 13px; font-weight: bold; color: #3c4043; }
+    .url-input-wrapper { display: flex; gap: 8px; margin-bottom: 20px; }
+    .url-input-wrapper input[type="text"] { flex: 1; padding: 8px 12px; box-sizing: border-box; border: 1px solid #dadce0; border-radius: 4px; font-size: 14px; background: #fff; font-family: inherit; }
+    .url-input-wrapper input[type="text"]:focus { border-color: #01875f; outline: none; box-shadow: 0 0 0 2px rgba(1,135,95,0.2); }
 
     .genre-block { background: #ffffff; border: 1px solid #dadce0; border-radius: 8px; padding: 14px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
     .genre-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
@@ -281,7 +284,7 @@
                 });
 
                 const introHtml = config.siteIntro ? \`<div class="intro-section"><p class="intro-text">\${escapeHtml(config.siteIntro)}</p></div>\` : '';
-                const blogUrl = (config.blogUrl || '').trim() || 'https://nama1223.com/NaMaMeMo/?p=2ae3dd38-13bb-40e6-b0e3-66dc19f74bcd';
+                const blogUrl = (config.blogUrl || '').trim();
                 const blogNavHtml = blogUrl ? \`<li class=\"nav-item\" data-tab=\"blog\"><a href=\"#\" class=\"nav-link\">文章</a></li>\` : '';
                 const blogViewHtml = blogUrl ? \`<div id=\"view-blog\" style=\"display:none\"><iframe id=\"blogFrame\" class=\"blog-frame\" title=\"文章\"></iframe></div>\` : '';
 
@@ -366,6 +369,7 @@
         // =========================================
         const STORAGE_KEY_V5 = 'namaStudioStoreData_v5';
         const STORAGE_KEY_V4 = 'namaStudioStoreData_v4'; // 後方互換用
+        const URL_STORAGE_KEY = 'namaStudioTopUrl_v1'; // URL読み込み欄の記憶用
 
         const DEFAULT_PAGES = {
             donation: {
@@ -401,7 +405,7 @@
             siteName: "Nama Studio ─ナマスタ─",
             siteIntro: "自作アプリの公開ポータルサイトです。音楽系アプリや便利ツールなどを公開しています。",
             logoSrc: "NamaStudioLogoHalf.png",
-            blogUrl: "https://nama1223.com/NaMaMeMo/?p=2ae3dd38-13bb-40e6-b0e3-66dc19f74bcd",
+            blogUrl: "",
             pages: DEFAULT_PAGES,
             genres: [
                 {
@@ -547,38 +551,76 @@
             return merged;
         }
 
+        function applyImportedText(text) {
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const dataScript = doc.getElementById('namameto-store-data');
+
+                if (!dataScript) {
+                    alert("読み込んだHTMLに、専用のデータブロックが見つかりません。");
+                    return false;
+                }
+
+                const rawB64 = dataScript.textContent.trim();
+                const jsonString = decodeBase64(rawB64);
+                const parsedData = JSON.parse(jsonString);
+
+                APP_CONFIG = mergeWithDefault(parsedData);
+                saveToStorage();
+                renderEditor();
+                renderPreview();
+                alert("データの読み込みに成功しました！");
+                return true;
+            } catch (err) {
+                alert("データの解析中にエラーが発生しました。");
+                console.error(err);
+                return false;
+            }
+        }
+
         function importHTML(event) {
             const file = event.target.files[0];
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                const text = e.target.result;
-                try {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(text, 'text/html');
-                    const dataScript = doc.getElementById('namameto-store-data');
-                    
-                    if (!dataScript) {
-                        alert("読み込んだHTMLファイルに、専用のデータブロックが見つかりません。");
-                        return;
-                    }
-                    
-                    const rawB64 = dataScript.textContent.trim();
-                    const jsonString = decodeBase64(rawB64);
-                    const parsedData = JSON.parse(jsonString);
-                    
-                    APP_CONFIG = mergeWithDefault(parsedData);
-                    saveToStorage();
-                    renderEditor();
-                    renderPreview();
-                    alert("データの読み込みに成功しました！");
-                } catch (err) {
-                    alert("ファイルの解析中にエラーが発生しました。");
-                    console.error(err);
-                }
+                applyImportedText(e.target.result);
                 event.target.value = '';
             };
             reader.readAsText(file);
+        }
+
+        // --- URLからの読み込み（入力内容はローカルに記憶） ---
+        function rememberUrlInput() {
+            const input = document.getElementById('html-url-input');
+            if (input) localStorage.setItem(URL_STORAGE_KEY, input.value);
+        }
+
+        function savedUrlValue() {
+            return localStorage.getItem(URL_STORAGE_KEY) || '';
+        }
+
+        async function loadFromURL() {
+            const input = document.getElementById('html-url-input');
+            let url = (input ? input.value : '').trim();
+            if (!url) {
+                alert("URLが入力されていません。");
+                return;
+            }
+            rememberUrlInput();
+            if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+            try {
+                const res = await fetch(url, { cache: 'no-store' });
+                if (!res.ok) {
+                    alert("取得に失敗しました（HTTP " + res.status + "）。URLを確認してください。");
+                    return;
+                }
+                const text = await res.text();
+                applyImportedText(text);
+            } catch (err) {
+                alert("URLから読み込めませんでした。アドレスや通信環境、相手サイトの制限を確認してください。");
+                console.error(err);
+            }
         }
 
         // --- ジャンル・アプリの操作 ---
@@ -674,6 +716,11 @@
                     </label>
                     <input type="file" id="html-importer" accept=".html" onchange="importHTML(event)">
                 </div>
+
+                <div class="url-input-wrapper">
+                    <input type="text" id="html-url-input" placeholder="公開中のページのURLから読み込む（例: https://nama1223.com）" value="${escapeHtml(savedUrlValue())}" oninput="rememberUrlInput()" onkeydown="if(event.key==='Enter'){event.preventDefault(); loadFromURL();}">
+                    <button class="btn" style="width:auto; padding:8px 18px; margin-top:0;" onclick="loadFromURL()">読み込み</button>
+                </div>
                 
                 <div class="status-bar">
                     ※入力内容はブラウザに自動保存されます | <button class="reset-btn" onclick="resetData()">初期状態にリセット</button>
@@ -694,7 +741,7 @@
                     <input type="text" value="${escapeHtml(APP_CONFIG.logoSrc)}" oninput="APP_CONFIG.logoSrc=this.value; saveToStorage(); renderPreview();">
                 </div>
                 <div class="form-group">
-                    <label>文章URL（NaMaMeMoの公開URL・空欄なら文章タブなし）</label>
+                    <label>文章タブURL（ブログ等の外部ページURL・空欄なら文章タブなし）</label>
                     <input type="text" value="${escapeHtml(APP_CONFIG.blogUrl || '')}" oninput="APP_CONFIG.blogUrl=this.value; saveToStorage(); renderPreview();">
                 </div>
                 
