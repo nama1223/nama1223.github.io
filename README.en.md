@@ -15,5 +15,10 @@ The repository of the "Nama Studio" portal site, where my self-made apps are pub
 
 The apps are mainly music tools (metronome, tuner, recording section player, etc.) and handy utilities. See each app's repository README and its store page on the site for details.
 
+## License & Redistribution
+
+For the policy on modification and redistribution, see "Modification & Redistribution" in the About section of the Nama Studio top page (that page is the latest version of the policy).
+https://nama1223.com/
+
 ## Author
 Nama Studio
