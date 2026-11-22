@@ -88,6 +88,7 @@
     @container (max-width: 600px) {
         .store-top-view .apps-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
         .store-top-view .navbar-container { flex-direction: column; align-items: flex-start; }
+        .store-top-view .navbar-container nav { width: 100%; }
         .store-top-view .nav-menu { width: 100%; justify-content: space-between; margin-top: 4px; }
     }
     
@@ -177,11 +178,21 @@
     .device-tabs { display: flex; gap: 4px; }
     .device-tab { font-size: 9px; padding: 2px 5px; border-radius: 3px; font-weight: bold; background-color: #f1f3f4; color: #bdc1c6; border: 1px solid #e8eaed; box-sizing: border-box; }
     .device-tab.active { background-color: #e6f3ef; color: #01875f; border-color: #c2e2d6; }
+    .blog-frame { width: 100%; height: calc(100dvh - 120px); min-height: 420px; border: none; display: block; background: #ffffff; border-radius: 8px; }
+    #view-blog { margin: 0 -8px; }
+    body.blog-mode { overflow: hidden; }
+    body.blog-mode #store-root { display: flex; flex-direction: column; height: 100dvh; }
+    body.blog-mode .main-content { flex: 1; min-height: 0; display: flex; flex-direction: column; width: 100%; }
+    body.blog-mode #view-blog { flex: 1; min-height: 0; display: flex; }
+    body.blog-mode .blog-frame { flex: 1; height: auto; min-height: 0; }
 
     @media (max-width: 600px) {
         .navbar { padding: 8px 12px; }
         .navbar-container { flex-direction: column; align-items: flex-start; gap: 8px; }
+        .navbar-container nav { width: 100%; }
         .nav-menu { width: 100%; justify-content: space-between; gap: 0; }
+        .blog-frame { height: calc(100dvh - 152px); }
+        #view-blog { margin: 0 -6px; }
         .nav-item { padding: 4px 0; }
         .nav-item.active::after { bottom: -4px; }
         .main-content { padding: 16px 12px; }
@@ -270,6 +281,9 @@
                 });
 
                 const introHtml = config.siteIntro ? \`<div class="intro-section"><p class="intro-text">\${escapeHtml(config.siteIntro)}</p></div>\` : '';
+                const blogUrl = (config.blogUrl || '').trim() || 'https://nama1223.com/NaMaMeMo/?p=2ae3dd38-13bb-40e6-b0e3-66dc19f74bcd';
+                const blogNavHtml = blogUrl ? \`<li class=\"nav-item\" data-tab=\"blog\"><a href=\"#\" class=\"nav-link\">文章</a></li>\` : '';
+                const blogViewHtml = blogUrl ? \`<div id=\"view-blog\" style=\"display:none\"><iframe id=\"blogFrame\" class=\"blog-frame\" title=\"文章\"></iframe></div>\` : '';
 
                 function pageBlocksHtml(p) {
                     let h = '';
@@ -306,6 +320,7 @@
                                     <li class="nav-item" data-tab="donation"><a href="#" class="nav-link">寄付について</a></li>
                                     <li class="nav-item" data-tab="author"><a href="#" class="nav-link">作者</a></li>
                                     <li class="nav-item" data-tab="contact"><a href="#" class="nav-link">お問い合わせ</a></li>
+                                    \${blogNavHtml}
                                 </ul>
                             </nav>
                         </div>
@@ -318,6 +333,7 @@
                         <div id="view-donation" style="display:none">\${pageHtml('donation')}</div>
                         <div id="view-author" style="display:none">\${pageHtml('author')}</div>
                         <div id="view-contact" style="display:none">\${pageHtml('contact')}</div>
+                        \${blogViewHtml}
                     </main>
                 \`;
 
@@ -325,8 +341,13 @@
                     item.addEventListener('click', function(e) {
                         e.preventDefault();
                         const tab = item.getAttribute('data-tab');
+                        document.body.classList.toggle('blog-mode', tab === 'blog');
                         document.querySelectorAll('.nav-item[data-tab]').forEach(function(n) { n.classList.toggle('active', n === item); });
-                        ['apps', 'donation', 'author', 'contact'].forEach(function(t) {
+                        if (tab === 'blog') {
+                            const bf = document.getElementById('blogFrame');
+                            if (bf && !bf.getAttribute('src')) bf.setAttribute('src', blogUrl);
+                        }
+                        ['apps', 'donation', 'author', 'contact', 'blog'].forEach(function(t) {
                             const v = document.getElementById('view-' + t);
                             if (v) v.style.display = (t === tab) ? '' : 'none';
                         });
@@ -380,6 +401,7 @@
             siteName: "Nama Studio ─ナマスタ─",
             siteIntro: "自作アプリの公開ポータルサイトです。音楽系アプリや便利ツールなどを公開しています。",
             logoSrc: "NamaStudioLogoHalf.png",
+            blogUrl: "https://nama1223.com/NaMaMeMo/?p=2ae3dd38-13bb-40e6-b0e3-66dc19f74bcd",
             pages: DEFAULT_PAGES,
             genres: [
                 {
@@ -486,6 +508,7 @@
             merged.siteName = loadedData.siteName || DEFAULT_CONFIG.siteName;
             merged.siteIntro = loadedData.siteIntro !== undefined ? loadedData.siteIntro : DEFAULT_CONFIG.siteIntro;
             merged.logoSrc = loadedData.logoSrc || DEFAULT_CONFIG.logoSrc;
+            merged.blogUrl = loadedData.blogUrl !== undefined ? loadedData.blogUrl : DEFAULT_CONFIG.blogUrl;
             
             merged.genres = [];
             if (Array.isArray(loadedData.genres)) {
@@ -670,6 +693,10 @@
                     <label>サイトロゴ画像パス</label>
                     <input type="text" value="${escapeHtml(APP_CONFIG.logoSrc)}" oninput="APP_CONFIG.logoSrc=this.value; saveToStorage(); renderPreview();">
                 </div>
+                <div class="form-group">
+                    <label>文章URL（NaMaMeMoの公開URL・空欄なら文章タブなし）</label>
+                    <input type="text" value="${escapeHtml(APP_CONFIG.blogUrl || '')}" oninput="APP_CONFIG.blogUrl=this.value; saveToStorage(); renderPreview();">
+                </div>
                 
             ` + '';
 
@@ -835,6 +862,7 @@
                                     <li class="nav-item ${currentTab === 'donation' ? 'active' : ''}" onclick="switchTab('donation')"><a class="nav-link">寄付について</a></li>
                                     <li class="nav-item ${currentTab === 'author' ? 'active' : ''}" onclick="switchTab('author')"><a class="nav-link">作者</a></li>
                                     <li class="nav-item ${currentTab === 'contact' ? 'active' : ''}" onclick="switchTab('contact')"><a class="nav-link">お問い合わせ</a></li>
+                                    ${APP_CONFIG.blogUrl ? '<li class="nav-item ' + (currentTab === 'blog' ? 'active' : '') + '" onclick="switchTab(\'blog\')"><a class="nav-link">文章</a></li>' : ''}
                                 </ul>
                             </nav>
                         </div>
@@ -847,6 +875,7 @@
                         <div style="display:${currentTab === 'donation' ? '' : 'none'}">${pageHtmlPreview('donation')}</div>
                         <div style="display:${currentTab === 'author' ? '' : 'none'}">${pageHtmlPreview('author')}</div>
                         <div style="display:${currentTab === 'contact' ? '' : 'none'}">${pageHtmlPreview('contact')}</div>
+                        <div style="display:${currentTab === 'blog' ? '' : 'none'}">${APP_CONFIG.blogUrl ? '<iframe src="' + escapeHtml(APP_CONFIG.blogUrl) + '" style="width:100%; height:480px; border:none; border-radius:8px; background:#fff;" title="文章"></iframe>' : ''}</div>
                     </main>
                 </div>
             `;
