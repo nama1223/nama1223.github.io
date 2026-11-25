@@ -254,6 +254,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NamaStudio Download Page</title>
+%%%OG_TAGS%%%
 <style>
     :root { --primary-color: #01875f; --bg-color: #ffffff; --text-main: #202124; --text-sub: #5f6368; --border-color: #e8eaed; --btn-radius: 8px; }
     body { font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; background-color: #f2f2f2; margin: 0; padding: 0; color: var(--text-main); }
@@ -857,7 +858,19 @@ function exportHTML() {
     const exportData = JSON.parse(JSON.stringify(APP_CONFIG));
     if (exportData.media) exportData.media.forEach(m => delete m._tempUrl);
     const configStr = JSON.stringify(exportData, null, 4);
-    const finalHTML = template.replace('/*%%%APP_CONFIG_JSON%%%*/', configStr);
+    const escAttr = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    const ogTitle = (exportData.ja && exportData.ja.title) || '';
+    const ogDescRaw = ((exportData.ja && exportData.ja.description) || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').split('■')[0].trim();
+    const ogDesc = ogDescRaw.length > 100 ? ogDescRaw.slice(0, 100) + '…' : ogDescRaw;
+    let ogImage = exportData.appIcon || '';
+    if (ogImage && !/^https?:\/\//.test(ogImage)) ogImage = ogImage.startsWith('/') ? 'https://nama1223.com' + ogImage : '';
+    if (ogImage) ogImage = ogImage.replace('512', '192');
+    let ogTags = '';
+    if (ogTitle) ogTags += '<meta property="og:title" content="' + escAttr(ogTitle) + '">\n';
+    if (ogDesc) ogTags += '<meta name="description" content="' + escAttr(ogDesc) + '">\n<meta property="og:description" content="' + escAttr(ogDesc) + '">\n';
+    if (ogImage) ogTags += '<meta property="og:image" content="' + escAttr(ogImage) + '">\n';
+    ogTags += '<meta property="og:type" content="website">\n<meta name="twitter:card" content="summary">';
+    const finalHTML = template.replace('/*%%%APP_CONFIG_JSON%%%*/', configStr).replace('%%%OG_TAGS%%%', ogTags);
     const blob = new Blob([finalHTML], { type: 'text/html' });
     const url = URL.createObjectURL(blob); const a = document.createElement('a');
     a.href = url; a.download = 'NamaStudioStore_Updated.html'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);

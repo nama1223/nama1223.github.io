@@ -132,6 +132,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GLOBAL_SITE_NAME</title>
+<meta name="description" content="GLOBAL_SITE_INTRO">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nama1223.com/">
+<meta property="og:title" content="GLOBAL_SITE_NAME">
+<meta property="og:description" content="GLOBAL_SITE_INTRO">
+<meta property="og:image" content="GLOBAL_OG_IMAGE">
+<meta name="twitter:card" content="summary">
 <style>
     body { margin: 0; padding: 0; background-color: #f2f2f2; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; color: #202124; }
     .navbar { position: sticky; top: 0; background-color: #ffffff; border-bottom: 1px solid #e8eaed; z-index: 1000; min-height: 56px; display: flex; align-items: center; padding: 8px 16px; box-sizing: border-box; }
@@ -969,6 +976,8 @@
             
             let finalHTML = EXPORT_TEMPLATE.replace('DATA_B64_PLACEHOLDER', b64Data);
             finalHTML = finalHTML.replace(/GLOBAL_SITE_NAME/g, escapeHtml(APP_CONFIG.siteName));
+            finalHTML = finalHTML.replace(/GLOBAL_SITE_INTRO/g, escapeHtml(APP_CONFIG.siteIntro));
+            finalHTML = finalHTML.replace(/GLOBAL_OG_IMAGE/g, 'https://nama1223.com/' + APP_CONFIG.logoSrc);
             
             const blob = new Blob([finalHTML], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
